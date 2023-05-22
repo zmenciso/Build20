@@ -8,7 +8,6 @@ import tools
 
 # Globals
 OUTFILE = None
-MODFILE = None
 HEADER = '&{template:default}'
 
 SAVES = {
@@ -126,9 +125,9 @@ if __name__ == '__main__':
         if args[0] == '-h' or args[0] == '--help':
             usage(0)
         elif args[0] == '-f' or args[0] == '--file':
-            OUTFILE = args.pop(1)
+            fout = args.pop(1)
         elif args[0] == '-m' or args[0] == '--modfile':
-            MODFILE = args.pop(1)
+            fmod = args.pop(1)
         else:
             usage(1)
 
@@ -139,29 +138,37 @@ if __name__ == '__main__':
     else:
         stats = os.path.realpath(args.pop(0))
 
-    if OUTFILE:
+    if fout:
         try:
-            OUTFILE = open(OUTFILE, 'w')
+            OUTFILE = open(fout, 'w')
         except Exception as e:
-            tools.error(f'Could not open {OUTFILE} for writing ({e})', 3)
+            tools.error(f'Could not open file "{fout}" for writing ({e})', 3)
     else:
         OUTFILE = sys.stdout
 
     data = parse_json(stats)
 
-    if MODFILE:
+    if fmod:
         modifiers = {}
 
-        with open('mods.txt') as m:
-            for line in m:
-                line = line.strip().lower()
-                if not line.startswith('#') and ' ' in line:
-                    try:
-                        modifiers[line.split()[0]] = int(line.split()[1])
-                    except Exception as e:
-                        tools.error(f'Unable to decode modifier {line} ({e})')
+        try:
+            m = open(fmod)
+        except Exception as e:
+            tools.error(f'Could not open file "{fmod}" ({e})', 4)
+
+        for line in m:
+            line = line.strip().lower()
+            if not line.startswith('#') and line:
+                try:
+                    modifiers[line.split()[0]] = int(line.split()[1])
+                except Exception as e:
+                    tools.error(f'Unable to decode modifier "{line}" ({e})')
+
     else:
         modifiers = None
 
     write_skills(data, modifiers)
     write_throws(data, modifiers)
+
+    if OUTFILE:
+        tools.cprint('OKGREEN', f'Successfully wrote "{fout}"')
