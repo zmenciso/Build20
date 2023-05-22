@@ -4,11 +4,12 @@ import json
 import math
 import sys
 import os
+
 import tools
+import text
 
 # Globals
 OUTFILE = None
-HEADER = '&{template:default}'
 
 SAVES = {
     'will': 'wis',
@@ -38,15 +39,6 @@ SKILLS = {
 
 
 # Functions
-def usage(exitcode):
-    print(f'''{sys.argv[0]} [options] INPUT
-    -f  --file      FILE    Write output to FILE
-    -m  --modfile   FILE    Use the modifications in FILE
-    -h  --help              Print this message''')
-
-    sys.exit(exitcode)
-
-
 def parse_json(infile):
     try:
         with open(infile) as j:
@@ -85,12 +77,8 @@ def decode_modifier(modifiers, field):
 
 
 def write_throws(data, modifiers):
-    if not OUTFILE:
-        print(tools.bar('Saving Throws'))
-    else:
-        print(tools.bar('Saving Throws', length=80), file=OUTFILE)
-
-    print(HEADER + '{{name= Saving Throws}} {{Result = ?{Save', end='', file=OUTFILE)
+    text.write_preamble('Save', OUTFILE, 'Saving Throws')
+    print('{{Outcome = ?{Save', end='', file=OUTFILE)
 
     for throw, ability in SAVES.items():
         bonus = data['proficiencies'][throw] + data['level']
@@ -98,23 +86,19 @@ def write_throws(data, modifiers):
         value = modifier + bonus + decode_modifier(modifiers, throw)
         print(f'| {throw.title()}, **{throw.title()}** [[d20 + {value}]]', end='', file=OUTFILE)
 
-    print('}}}\n', file=OUTFILE)
+    text.write_cap(OUTFILE)
 
 
 def write_skills(data, modifiers):
-    if not OUTFILE:
-        print(tools.bar('Skills'))
-    else:
-        print(tools.bar('Skills', length=80), file=OUTFILE)
-
-    print(HEADER + '{{name= Skill Check}} {{Result = ?{Skill', end='', file=OUTFILE)
+    text.write_preamble('Skill', OUTFILE, 'Skill Check')
+    print('{{Outcome = ?{Skill', end='', file=OUTFILE)
 
     for skill in data['proficiencies']:
         if skill in SKILLS:
             value = decode_skill(data, skill) + decode_modifier(modifiers, skill)
             print(f'| {skill.title()}, **{skill.title()}** [[d20 + {value}]]', end='', file=OUTFILE)
 
-    print('}}}\n', file=OUTFILE)
+    text.write_cap(OUTFILE)
 
 
 # Main Execution
@@ -123,18 +107,18 @@ if __name__ == '__main__':
 
     while len(args) and args[0].startswith('-'):
         if args[0] == '-h' or args[0] == '--help':
-            usage(0)
+            text.usage(0)
         elif args[0] == '-f' or args[0] == '--file':
             fout = args.pop(1)
         elif args[0] == '-m' or args[0] == '--modfile':
             fmod = args.pop(1)
         else:
-            usage(1)
+            text.usage(1)
 
         args.pop(0)
 
     if len(args) < 1:
-        usage(1)
+        text.usage(1)
     else:
         stats = os.path.realpath(args.pop(0))
 
