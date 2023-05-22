@@ -13,13 +13,13 @@ def usage(exitcode):
     sys.exit(exitcode)
 
 
-def write_preamble(prompt, outfile, title=None):
+def write_preamble(prompt, outfile, title=None, header=True):
     if not title:
         title = prompt
 
-    if not outfile:
+    if not outfile and header:
         print(tools.bar(title))
-    else:
+    elif header:
         print(tools.bar(title, length=80), file=outfile)
 
     print(HEADER + '{{name= ' + title + '}}', end='', file=outfile)

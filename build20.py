@@ -105,17 +105,25 @@ def write_strike(data, modifiers):
     for item in data['weapons']:
         prof = item['prof']
         mod = data['proficiencies'][prof] + data['level'] + item['pot']
-        text.write_preamble('Strike', OUTFILE, item['display'])
-        print('{{Strike = ?{Attack ', end='', file=OUTFILE)
-        print(f'| Melee, Attack [[d20 + {mod + decode_ability(data, "str")}]]',
-              file=OUTFILE)
-        print(f'Damage [[{item["die"]} + {decode_ability(data, "str")}]]',
-              end='', file=OUTFILE)
-        print(f'| Ranged, Attack [[d20 + {mod + decode_ability(data, "dex")}]]',
-              file=OUTFILE)
-        print(f'Damage [[{item["die"]} + {decode_ability(data, "dex")}]]',
-              end='', file=OUTFILE)
-        text.write_cap(OUTFILE)
+        strength = decode_ability(data, 'str')
+        dex = decode_ability(data, 'dex')
+
+        text.write_preamble('Melee Strike', OUTFILE, item['display'])
+        print('{{Attack = ?{Attack', end='', file=OUTFILE)
+        for i in range(3):
+            print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {strength} - {i * 5}]]',
+                  end='', file=OUTFILE)
+        print('}}}', end='', file=OUTFILE)
+        print('{{Damage = ' + f'[[{item["die"]} + {strength}]]' + '}}')
+
+        print('\nIf RANGED, use:', file=OUTFILE)
+        text.write_preamble('Ranged Strike', OUTFILE, item['display'], header=False)
+        print('{{Attack = ?{Attack', end='', file=OUTFILE)
+        for i in range(3):
+            print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {dex} - {i * 5}]]',
+                  end='', file=OUTFILE)
+        print('}}}', end='', file=OUTFILE)
+        print('{{Damage = ' + f'[[{item["die"]} + {dex}]]' + '}}')
 
 
 # Main Execution
