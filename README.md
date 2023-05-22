@@ -40,7 +40,5 @@ example, this file might look like:
 acrobatics -1
 stealth -1
 thievery -1
-
-# Dank power
-reflex 2
+reflex -1
 ```
