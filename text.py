@@ -22,7 +22,7 @@ def write_preamble(prompt, outfile, title=None):
     else:
         print(tools.bar(title, length=80), file=outfile)
 
-    print(HEADER + '{{name = ' + title + '}}', end='', file=outfile)
+    print(HEADER + '{{name= ' + title + '}}', end='', file=outfile)
 
 
 def write_cap(outfile, cap='}}}'):

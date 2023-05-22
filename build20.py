@@ -101,9 +101,28 @@ def write_skills(data, modifiers):
     text.write_cap(OUTFILE)
 
 
+def write_strike(data, modifiers):
+    for item in data['weapons']:
+        prof = item['prof']
+        mod = data['proficiencies'][prof] + data['level'] + item['pot']
+        text.write_preamble('Strike', OUTFILE, item['display'])
+        print('{{Strike = ?{Attack ', end='', file=OUTFILE)
+        print(f'| Melee, Attack [[d20 + {mod + decode_ability(data, "str")}]]',
+              file=OUTFILE)
+        print(f'Damage [[{item["die"]} + {decode_ability(data, "str")}]]',
+              end='', file=OUTFILE)
+        print(f'| Ranged, Attack [[d20 + {mod + decode_ability(data, "dex")}]]',
+              file=OUTFILE)
+        print(f'Damage [[{item["die"]} + {decode_ability(data, "dex")}]]',
+              end='', file=OUTFILE)
+        text.write_cap(OUTFILE)
+
+
 # Main Execution
 if __name__ == '__main__':
     args = sys.argv[1:]
+    fout = None
+    fmod = None
 
     while len(args) and args[0].startswith('-'):
         if args[0] == '-h' or args[0] == '--help':
@@ -153,6 +172,7 @@ if __name__ == '__main__':
 
     write_skills(data, modifiers)
     write_throws(data, modifiers)
+    write_strike(data, modifiers)
 
-    if OUTFILE:
+    if OUTFILE is not sys.stdout:
         tools.cprint('OKGREEN', f'Successfully wrote "{fout}"')
