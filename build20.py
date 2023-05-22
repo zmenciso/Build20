@@ -10,32 +10,40 @@ import tools
 OUTFILE = None
 MODFILE = None
 HEADER = '&{template:default}'
+
+SAVES = {
+    'will': 'wis',
+    'fortitude': 'con',
+    'reflex': 'dex'
+    }
+
 SKILLS = {
-            'acrobatics': 'dex',
-            'arcana': 'int',
-            'athletics': 'str',
-            'crafting': 'int',
-            'deception': 'cha',
-            'diplomacy': 'cha',
-            'intimidation': 'cha',
-            'lore': 'int',
-            'medicine': 'wis',
-            'nature': 'wis',
-            'occultism': 'int',
-            'performance': 'cha',
-            'religion': 'wis',
-            'society': 'int',
-            'stealth': 'dex',
-            'survival': 'wis',
-            'thievery': 'dex'
-            }
+    'acrobatics': 'dex',
+    'arcana': 'int',
+    'athletics': 'str',
+    'crafting': 'int',
+    'deception': 'cha',
+    'diplomacy': 'cha',
+    'intimidation': 'cha',
+    'lore': 'int',
+    'medicine': 'wis',
+    'nature': 'wis',
+    'occultism': 'int',
+    'performance': 'cha',
+    'religion': 'wis',
+    'society': 'int',
+    'stealth': 'dex',
+    'survival': 'wis',
+    'thievery': 'dex'
+    }
 
 
 # Functions
 def usage(exitcode):
     print(f'''{sys.argv[0]} [options] INPUT
-    -f  --file  FILE    Write output to file
-    -h  --help          Print this message''')
+    -f  --file      FILE    Write output to FILE
+    -m  --modfile   FILE    Use the modifications in FILE
+    -h  --help              Print this message''')
 
     sys.exit(exitcode)
 
@@ -77,6 +85,23 @@ def decode_modifier(modifiers, field):
         return 0
 
 
+def write_throws(data, modifiers):
+    if not OUTFILE:
+        print(tools.bar('Saving Throws'))
+    else:
+        print(tools.bar('Saving Throws', length=80), file=OUTFILE)
+
+    print(HEADER + '{{name= Saving Throws}} {{Result = ?{Save', end='', file=OUTFILE)
+
+    for throw, ability in SAVES.items():
+        bonus = data['proficiencies'][throw] + data['level']
+        modifier = decode_ability(data, ability)
+        value = modifier + bonus + decode_modifier(modifiers, throw)
+        print(f'| {throw.title()}, **{throw.title()}** [[d20 + {value}]]', end='', file=OUTFILE)
+
+    print('}}}\n', file=OUTFILE)
+
+
 def write_skills(data, modifiers):
     if not OUTFILE:
         print(tools.bar('Skills'))
@@ -90,7 +115,7 @@ def write_skills(data, modifiers):
             value = decode_skill(data, skill) + decode_modifier(modifiers, skill)
             print(f'| {skill.title()}, **{skill.title()}** [[d20 + {value}]]', end='', file=OUTFILE)
 
-    print('}}}', end='', file=OUTFILE)
+    print('}}}\n', file=OUTFILE)
 
 
 # Main Execution
@@ -119,19 +144,24 @@ if __name__ == '__main__':
             OUTFILE = open(OUTFILE, 'w')
         except Exception as e:
             tools.error(f'Could not open {OUTFILE} for writing ({e})', 3)
+    else:
+        OUTFILE = sys.stdout
 
     data = parse_json(stats)
+
     if MODFILE:
         modifiers = {}
 
         with open('mods.txt') as m:
             for line in m:
-                try:
-                    modifiers[line.split()[0]] = int(line.split()[1])
-                except Exception as e:
-                    tools.error(f'Unable to decode modifier {line} ({e})')
+                line = line.strip().lower()
+                if not line.startswith('#') and ' ' in line:
+                    try:
+                        modifiers[line.split()[0]] = int(line.split()[1])
+                    except Exception as e:
+                        tools.error(f'Unable to decode modifier {line} ({e})')
     else:
         modifiers = None
 
-    breakpoint()
     write_skills(data, modifiers)
+    write_throws(data, modifiers)
