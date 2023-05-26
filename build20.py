@@ -77,7 +77,7 @@ def decode_modifier(modifiers, field):
 
 
 def write_throws(data, modifiers):
-    text.write_preamble('Save', OUTFILE, 'Saving Throws')
+    text.write_preamble(OUTFILE, 'Saving Throws')
     print('{{Outcome = ?{Save', end='', file=OUTFILE)
 
     for throw, ability in SAVES.items():
@@ -90,7 +90,7 @@ def write_throws(data, modifiers):
 
 
 def write_skills(data, modifiers):
-    text.write_preamble('Skill', OUTFILE, 'Skill Check')
+    text.write_preamble(OUTFILE, 'Skill Check')
     print('{{Outcome = ?{Skill', end='', file=OUTFILE)
 
     for skill in data['proficiencies']:
@@ -108,7 +108,7 @@ def write_strike(data, modifiers):
         strength = decode_ability(data, 'str')
         dex = decode_ability(data, 'dex')
 
-        text.write_preamble('Melee Strike', OUTFILE, item['display'])
+        text.write_preamble(OUTFILE, item['display'])
         print('{{Attack = ?{Attack', end='', file=OUTFILE)
         for i in range(3):
             print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {strength} - {i * 5}]]',
@@ -117,7 +117,7 @@ def write_strike(data, modifiers):
         print('{{Damage = ' + f'[[{item["die"]} + {strength}]]' + '}}')
 
         print('\nIf RANGED, use:', file=OUTFILE)
-        text.write_preamble('Ranged Strike', OUTFILE, item['display'], header=False)
+        text.write_preamble(OUTFILE, item['display'], header=False)
         print('{{Attack = ?{Attack', end='', file=OUTFILE)
         for i in range(3):
             print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {dex} - {i * 5}]]',

@@ -13,10 +13,7 @@ def usage(exitcode):
     sys.exit(exitcode)
 
 
-def write_preamble(prompt, outfile, title=None, header=True):
-    if not title:
-        title = prompt
-
+def write_preamble(outfile, title, header=True):
     if not outfile and header:
         print(tools.bar(title))
     elif header:
@@ -30,8 +27,8 @@ def write_cap(outfile, cap='}}}'):
 
 
 def write_healing(outfile):
-    write_preamble('Chug Potion!', outfile, 'Healing Potions')
-    print('''&{template:default} {{name= Chug Potion!}} {{Effect = ?{Potion| Minor, **Minor Healing Potion**
+    write_preamble(outfile, 'Healing Potion')
+    print('''{{Effect = ?{Potion| Minor, **Minor Healing Potion**
 Regain [[1d8]] HP | Lesser, **Lesser Healing Potion**
 Regain [[2d8+5]] HP | Moderate, **Moderate Healing Potion**
 Regain [[3d8+10]] HP | Greater, **Greater Healing Potion**
