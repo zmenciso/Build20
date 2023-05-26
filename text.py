@@ -14,7 +14,7 @@ def usage(exitcode):
 
 
 def write_preamble(outfile, title, header=True):
-    if not outfile and header:
+    if outfile == sys.stdout and header:
         print(tools.bar(title))
     elif header:
         print(tools.bar(title, length=80), file=outfile)
