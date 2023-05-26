@@ -123,7 +123,7 @@ def write_strike(data, modifiers):
             print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {dex} - {i * 5}]]',
                   end='', file=OUTFILE)
         print('}}}', end='', file=OUTFILE)
-        print('{{Damage = ' + f'[[{item["die"]} + {dex}]]' + '}}')
+        print('{{Damage = ' + f'[[{item["die"]} + {dex}]]' + '}}\n')
 
 
 # Main Execution
@@ -181,6 +181,7 @@ if __name__ == '__main__':
     write_skills(data, modifiers)
     write_throws(data, modifiers)
     write_strike(data, modifiers)
+    text.write_healing(OUTFILE)
 
     if OUTFILE is not sys.stdout:
         tools.cprint('OKGREEN', f'Successfully wrote "{fout}"')

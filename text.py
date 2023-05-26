@@ -27,3 +27,13 @@ def write_preamble(prompt, outfile, title=None, header=True):
 
 def write_cap(outfile, cap='}}}'):
     print(cap + '\n', file=outfile)
+
+
+def write_healing(outfile):
+    write_preamble('Chug Potion!', outfile, 'Healing Potions')
+    print('''&{template:default} {{name= Chug Potion!}} {{Effect = ?{Potion| Minor, **Minor Healing Potion**
+Regain [[1d8]] HP | Lesser, **Lesser Healing Potion**
+Regain [[2d8+5]] HP | Moderate, **Moderate Healing Potion**
+Regain [[3d8+10]] HP | Greater, **Greater Healing Potion**
+Regain [[6d8+20]] HP | Major, **Major Healing Potion**
+Regain [[8d8+30]] HP}}}''')
