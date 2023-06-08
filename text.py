@@ -4,10 +4,18 @@ import tools
 HEADER = '&{template:default}'
 
 
-def usage(exitcode):
+def usage_build(exitcode):
     print(f'''{sys.argv[0]} [options] INPUT
     -f  --file      FILE    Write output to FILE
     -m  --modfile   FILE    Use the modifications in FILE
+    -h  --help              Print this message''')
+
+    sys.exit(exitcode)
+
+
+def usage_heal(exitcode):
+    print(f'''{sys.argv[0]} [options] INPUT
+    -t  --time      VALUE   Maximum amount of time (hours)
     -h  --help              Print this message''')
 
     sys.exit(exitcode)

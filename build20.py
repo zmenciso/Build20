@@ -134,18 +134,18 @@ if __name__ == '__main__':
 
     while len(args) and args[0].startswith('-'):
         if args[0] == '-h' or args[0] == '--help':
-            text.usage(0)
+            text.usage_build(0)
         elif args[0] == '-f' or args[0] == '--file':
             fout = args.pop(1)
         elif args[0] == '-m' or args[0] == '--modfile':
             fmod = args.pop(1)
         else:
-            text.usage(1)
+            text.usage_build(1)
 
         args.pop(0)
 
     if len(args) < 1:
-        text.usage(1)
+        text.usage_build(1)
     else:
         stats = os.path.realpath(args.pop(0))
 
