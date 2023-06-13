@@ -1,32 +1,6 @@
 import text
+from data import SKILLS, SAVES
 from tools import decode_ability, decode_modifier, decode_skill
-
-
-SAVES = {
-    'will': 'wis',
-    'fortitude': 'con',
-    'reflex': 'dex'
-    }
-
-SKILLS = {
-    'acrobatics': 'dex',
-    'arcana': 'int',
-    'athletics': 'str',
-    'crafting': 'int',
-    'deception': 'cha',
-    'diplomacy': 'cha',
-    'intimidation': 'cha',
-    'lore': 'int',
-    'medicine': 'wis',
-    'nature': 'wis',
-    'occultism': 'int',
-    'performance': 'cha',
-    'religion': 'wis',
-    'society': 'int',
-    'stealth': 'dex',
-    'survival': 'wis',
-    'thievery': 'dex'
-    }
 
 
 def write_throws(data, modifiers, outfile):
