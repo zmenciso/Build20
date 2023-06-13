@@ -26,6 +26,40 @@ The `INPUT` should be a Pathbuilder 2e formatted JSON file ("Menu" > "Export" >
 
 Copy the macro after each header into a new Roll20 macro.
 
+### Spells
+
+Build20 can also generate spell macros by using a YAML file.  Copy
+`template.yaml` and fill in your caster stat (e.g. "Wis") and your casting type
+("e.g. Divine").  Then, add your spells after the `Spells:` key.  Spells consist
+of arbitrary key/value pairs (nesting not supported).  The following is an
+example spell:
+
+```yaml
+Spells:
+  Ignite Fireworks:
+    Range: "60 ft"
+    Area: "10 ft burst"
+    Save: |-
+      **REFLEX** DC [[$dc]]
+    Damage: |-
+      [[1d8]] fire damage
+      [[1d8]] sonic damage
+    Effect: |-
+      **Critical Success** The creature is unaffected.
+      **Success** The creature takes half damage and is dazzled for [[1]] round.
+      **Failure** The creature takes full damage and is dazzled for [[3]] rounds.
+      **Critical Failure** The creature takes double damage, takes [[1d4]] persistent fire damage, and is dazzled for [[1]] minute.
+```
+
+#### Substitutions
+
+The spells YAML format currently supports three substitutions:
+  - `$attack` will be replaced by your caster attack bonus (caster stat +
+    proficiency bonus)
+  - `$dc` will be replaced by your caster DC
+  - `$[STAT]` will be replaced by your bonus for `STAT` (e.g. `$cha` will be
+    replaced by your charisma bonus)
+
 ### Modifications File
 
 Any field (skill check, saving throw, etc.) can be **modified** with an integer
@@ -42,6 +76,9 @@ stealth -1
 thievery -1
 reflex -1
 ```
+
+To modify spells, use the caster type (e.g. "Divine").  To modify attack rolls,
+use the name of the weapon (e.g. "Large +1 Greatsword").
 
 ##  `heal.py`
 
@@ -75,3 +112,6 @@ Then, invoke the script as follows:
     -t  --time      VALUE   Maximum amount of time (hours)
     -h  --help              Print this message
 ```
+
+> `injured` party members do not need to be missing HP.  Feel free to mark your
+> entire party down at full health and only modify relevant PCs.
