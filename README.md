@@ -6,6 +6,7 @@ Convert Pathbuilder 2e JSON output to Roll20 macros!
 ##  Requirements
 
   - Python 3.9
+  - PyYAML 6.0
 
 > Note: This script was tested on BSD 13.1 and Linux 6.1.
 
