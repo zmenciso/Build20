@@ -1,41 +1,17 @@
 #!/usr/bin/env python
 
 import json
-import math
 import sys
 import os
 
 import tools
 import text
+from base import write_skills, write_throws
+from strike import write_strike
+from spells import write_spells
 
 # Globals
 OUTFILE = None
-
-SAVES = {
-    'will': 'wis',
-    'fortitude': 'con',
-    'reflex': 'dex'
-    }
-
-SKILLS = {
-    'acrobatics': 'dex',
-    'arcana': 'int',
-    'athletics': 'str',
-    'crafting': 'int',
-    'deception': 'cha',
-    'diplomacy': 'cha',
-    'intimidation': 'cha',
-    'lore': 'int',
-    'medicine': 'wis',
-    'nature': 'wis',
-    'occultism': 'int',
-    'performance': 'cha',
-    'religion': 'wis',
-    'society': 'int',
-    'stealth': 'dex',
-    'survival': 'wis',
-    'thievery': 'dex'
-    }
 
 
 # Functions
@@ -52,85 +28,12 @@ def parse_json(infile):
         tools.error('Input JSON not a valid Pathbuilder2e output', 3)
 
 
-def decode_ability(data, ability):
-    value = data['abilities'][ability]
-    return math.floor((value - 10) / 2)
-
-
-def decode_skill(data, skill):
-    if skill in SKILLS:
-        bonus = data['proficiencies'][skill] + data['level']
-        modifier = decode_ability(data, SKILLS[skill])
-        return modifier + bonus
-    else:
-        return None
-
-
-def decode_modifier(modifiers, field):
-    if not modifiers:
-        return 0
-
-    if field in modifiers:
-        return modifiers[field]
-    else:
-        return 0
-
-
-def write_throws(data, modifiers):
-    text.write_preamble(OUTFILE, 'Saving Throws')
-    print('{{Outcome = ?{Save', end='', file=OUTFILE)
-
-    for throw, ability in SAVES.items():
-        bonus = data['proficiencies'][throw] + data['level']
-        modifier = decode_ability(data, ability)
-        value = modifier + bonus + decode_modifier(modifiers, throw)
-        print(f'| {throw.title()}, **{throw.title()}** [[d20 + {value}]]', end='', file=OUTFILE)
-
-    text.write_cap(OUTFILE)
-
-
-def write_skills(data, modifiers):
-    text.write_preamble(OUTFILE, 'Skill Check')
-    print('{{Outcome = ?{Skill', end='', file=OUTFILE)
-
-    for skill in data['proficiencies']:
-        if skill in SKILLS:
-            value = decode_skill(data, skill) + decode_modifier(modifiers, skill)
-            print(f'| {skill.title()}, **{skill.title()}** [[d20 + {value}]]', end='', file=OUTFILE)
-
-    text.write_cap(OUTFILE)
-
-
-def write_strike(data, modifiers):
-    for item in data['weapons']:
-        prof = item['prof']
-        mod = data['proficiencies'][prof] + data['level'] + item['pot']
-        strength = decode_ability(data, 'str')
-        dex = decode_ability(data, 'dex')
-
-        text.write_preamble(OUTFILE, item['display'])
-        print('{{Attack = ?{Attack', end='', file=OUTFILE)
-        for i in range(3):
-            print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {strength} - {i * 5}]]',
-                  end='', file=OUTFILE)
-        print('}}}', end='', file=OUTFILE)
-        print('{{Damage = ' + f'[[{item["die"]} + {strength}]]' + '}}')
-
-        print('\nIf RANGED, use:', file=OUTFILE)
-        text.write_preamble(OUTFILE, item['display'], header=False)
-        print('{{Attack = ?{Attack', end='', file=OUTFILE)
-        for i in range(3):
-            print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {dex} - {i * 5}]]',
-                  end='', file=OUTFILE)
-        print('}}}', end='', file=OUTFILE)
-        print('{{Damage = ' + f'[[{item["die"]} + {dex}]]' + '}}\n')
-
-
 # Main Execution
 if __name__ == '__main__':
     args = sys.argv[1:]
     fout = None
     fmod = None
+    spellfile = None
 
     while len(args) and args[0].startswith('-'):
         if args[0] == '-h' or args[0] == '--help':
@@ -139,6 +42,8 @@ if __name__ == '__main__':
             fout = args.pop(1)
         elif args[0] == '-m' or args[0] == '--modfile':
             fmod = args.pop(1)
+        elif args[0] == '-s' or args[0] == '--spells':
+            spellfile = args.pop(1)
         else:
             text.usage_build(1)
 
@@ -182,6 +87,9 @@ if __name__ == '__main__':
     write_throws(data, modifiers)
     write_strike(data, modifiers)
     text.write_healing(OUTFILE)
+
+    if spellfile:
+        pass
 
     if OUTFILE is not sys.stdout:
         tools.cprint('OKGREEN', f'Successfully wrote "{fout}"')
