@@ -1,18 +1,31 @@
 #!/usr/bin/env python
 
-import sys
-import os
+import math
+from src import const
 
 
-def bar(header=None, char='#', length=os.get_terminal_size()[0]):
-    output = ''
+def decode_ability(data, ability):
+    value = data['abilities'][ability]
+    return math.floor((value - 10) / 2)
 
-    if header:
-        output += (length*char + '\n')
-        output += (char + header.center(length-2) + char + '\n')
 
-    output += (length*char + '\n')
-    return output
+def decode_skill(data, skill):
+    if skill in const.SKILLS:
+        bonus = data['proficiencies'][skill] + data['level']
+        modifier = decode_ability(data, const.SKILLS[skill])
+        return modifier + bonus
+    else:
+        return data['proficiencies'][skill] + data['level']
+
+
+def decode_modifier(modifiers, field):
+    if not modifiers:
+        return 0
+
+    if field in modifiers:
+        return modifiers[field]
+    else:
+        return 0
 
 
 def query(prompt=None, default=None):
@@ -35,36 +48,6 @@ def query(prompt=None, default=None):
             return valid[default]
         elif response.lower() in valid:
             return valid[response.lower()]
-
-
-def cprint(color, string, end='\n', file=sys.stdout):
-    bcolors = {
-        'HEADER': '\033[95m',
-        'OKBLUE': '\033[94m',
-        'OKCYAN': '\033[96m',
-        'OKGREEN': '\033[92m',
-        'WARNING': '\033[93m',
-        'FAIL': '\033[91m',
-        'ENDC': '\033[0m',
-        'BOLD': '\033[1m',
-        'UNDERLINE': '\033[4m'
-    }
-
-    if color.upper() in bcolors:
-        head = bcolors[color.upper()]
-    else:
-        head = f'\x1b[{color}m'
-
-    tail = '\x1b[0m'
-
-    print(head + string + tail, end=end, file=file)
-
-
-def error(message, exitcode=None):
-    cprint('0;31;40', f'ERROR: {message}', file=sys.stderr)
-
-    if exitcode:
-        sys.exit(exitcode)
 
 
 def print_format_table():
