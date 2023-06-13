@@ -19,6 +19,7 @@ Invoke the script like so:
 ./build20.py [options] INPUT
     -f  --file      FILE    Write output to FILE
     -m  --modfile   FILE    Use the modifications in FILE
+    -s  --spells    FILE    Also write macros for spells in FILE
     -h  --help              Print this message
 ```
 

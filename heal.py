@@ -2,7 +2,6 @@
 
 import sys
 import text
-import tools
 from random import randint
 
 
