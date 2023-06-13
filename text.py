@@ -1,47 +1,7 @@
 import sys
-import tools
+import os
 
 HEADER = '&{template:default}'
-
-
-def usage_build(exitcode):
-    print(f'''{sys.argv[0]} [options] INPUT
-    -f  --file      FILE    Write output to FILE
-    -m  --modfile   FILE    Use the modifications in FILE
-    -h  --help              Print this message''')
-
-    sys.exit(exitcode)
-
-
-def usage_heal(exitcode):
-    print(f'''{sys.argv[0]} [options] INPUT
-    -t  --time      VALUE   Maximum amount of time (hours)
-    -h  --help              Print this message''')
-
-    sys.exit(exitcode)
-
-
-def write_preamble(outfile, title, header=True):
-    if outfile == sys.stdout and header:
-        print(tools.bar(title))
-    elif header:
-        print(tools.bar(title, length=80), file=outfile)
-
-    print(HEADER + '{{name= ' + title + '}}', end='', file=outfile)
-
-
-def write_cap(outfile, cap='}}}'):
-    print(cap + '\n', file=outfile)
-
-
-def write_healing(outfile):
-    write_preamble(outfile, 'Healing Potion')
-    print('''{{Effect = ?{Potion| Minor, **Minor Healing Potion**
-Regain [[1d8]] HP | Lesser, **Lesser Healing Potion**
-Regain [[2d8+5]] HP | Moderate, **Moderate Healing Potion**
-Regain [[3d8+10]] HP | Greater, **Greater Healing Potion**
-Regain [[6d8+20]] HP | Major, **Major Healing Potion**
-Regain [[8d8+30]] HP}}}''')
 
 
 def cprint(color, string, end='\n', file=sys.stdout):
@@ -74,7 +34,6 @@ def error(message, exitcode=None):
         sys.exit(exitcode)
 
 
-
 def bar(header=None, char='#', length=os.get_terminal_size()[0]):
     output = ''
 
@@ -86,3 +45,42 @@ def bar(header=None, char='#', length=os.get_terminal_size()[0]):
     return output
 
 
+def usage_build(exitcode):
+    print(f'''{sys.argv[0]} [options] INPUT
+    -f  --file      FILE    Write output to FILE
+    -m  --modfile   FILE    Use the modifications in FILE
+    -s  --spells    FILE    Also write macros for spells in FILE
+    -h  --help              Print this message''')
+
+    sys.exit(exitcode)
+
+
+def usage_heal(exitcode):
+    print(f'''{sys.argv[0]} [options] INPUT
+    -t  --time      VALUE   Maximum amount of time (hours)
+    -h  --help              Print this message''')
+
+    sys.exit(exitcode)
+
+
+def write_preamble(outfile, title, header=True):
+    if outfile == sys.stdout and header:
+        print(bar(title))
+    elif header:
+        print(bar(title, length=80), file=outfile)
+
+    print(HEADER + '{{name= ' + title + '}}', end='', file=outfile)
+
+
+def write_cap(outfile, cap='}}}'):
+    print(cap + '\n', file=outfile)
+
+
+def write_healing(outfile):
+    write_preamble(outfile, 'Healing Potion')
+    print('''{{Effect = ?{Potion| Minor, **Minor Healing Potion**
+Regain [[1d8]] HP | Lesser, **Lesser Healing Potion**
+Regain [[2d8+5]] HP | Moderate, **Moderate Healing Potion**
+Regain [[3d8+10]] HP | Greater, **Greater Healing Potion**
+Regain [[6d8+20]] HP | Major, **Major Healing Potion**
+Regain [[8d8+30]] HP}}}''')

@@ -4,7 +4,6 @@ import json
 import sys
 import os
 
-import tools
 import text
 from base import write_skills, write_throws
 from strike import write_strike
@@ -20,12 +19,12 @@ def parse_json(infile):
         with open(infile) as j:
             data = json.loads(j.read())
     except Exception as e:
-        tools.error(f'Could not parse json ({e})', 2)
+        text.error(f'Could not parse json ({e})', 2)
 
     if 'build' in data:
         return data['build']
     else:
-        tools.error('Input JSON not a valid Pathbuilder2e output', 3)
+        text.error('Input JSON not a valid Pathbuilder2e output', 3)
 
 
 # Main Execution
@@ -58,7 +57,7 @@ if __name__ == '__main__':
         try:
             OUTFILE = open(fout, 'w')
         except Exception as e:
-            tools.error(f'Could not open file "{fout}" for writing ({e})', 3)
+            text.error(f'Could not open file "{fout}" for writing ({e})', 3)
     else:
         OUTFILE = sys.stdout
 
@@ -70,7 +69,7 @@ if __name__ == '__main__':
         try:
             m = open(fmod)
         except Exception as e:
-            tools.error(f'Could not open file "{fmod}" ({e})', 4)
+            text.error(f'Could not open file "{fmod}" ({e})', 4)
 
         for line in m:
             line = line.strip().lower()
@@ -78,18 +77,18 @@ if __name__ == '__main__':
                 try:
                     modifiers[line.split()[0]] = int(line.split()[1])
                 except Exception as e:
-                    tools.error(f'Unable to decode modifier "{line}" ({e})')
+                    text.error(f'Unable to decode modifier "{line}" ({e})')
 
     else:
         modifiers = None
 
-    write_skills(data, modifiers)
-    write_throws(data, modifiers)
-    write_strike(data, modifiers)
+    write_skills(data, modifiers, OUTFILE)
+    write_throws(data, modifiers, OUTFILE)
+    write_strike(data, modifiers, OUTFILE)
     text.write_healing(OUTFILE)
 
     if spellfile:
-        pass
+        write_spells(spellfile, data, modifiers, OUTFILE)
 
     if OUTFILE is not sys.stdout:
-        tools.cprint('OKGREEN', f'Successfully wrote "{fout}"')
+        text.cprint('OKGREEN', f'Successfully wrote "{fout}"')

@@ -1,10 +1,10 @@
 import text
-from tools import decode_ability
+from tools import decode_ability, decode_modifier
 
 def write_strike(data, modifiers, outfile):
     for item in data['weapons']:
         prof = item['prof']
-        mod = data['proficiencies'][prof] + data['level'] + item['pot']
+        mod = data['proficiencies'][prof] + data['level'] + item['pot'] + decode_modifier(modifiers, item)
         strength = decode_ability(data, 'str')
         dex = decode_ability(data, 'dex')
 

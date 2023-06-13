@@ -42,7 +42,7 @@ def parse_input(file):
     try:
         fin = open(file)
     except Exception as e:
-        tools.error(f'Could not open {file} for reading ({e})', 2)
+        text.error(f'Could not open {file} for reading ({e})', 2)
 
     for line in fin:
         if line.lower().startswith('healer'):
@@ -115,7 +115,7 @@ if __name__ == '__main__':
     while TIME - e_time > 0 and injuries_present():
         e_time = e_time + strategic_treat()
 
-    tools.cprint('OKBLUE', f'Time elapsed: {e_time} hours')
+    text.cprint('OKBLUE', f'Time elapsed: {e_time} hours')
     print()
 
     for char in INJURED:

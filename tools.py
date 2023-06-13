@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import math
-from base import SKILLS
+from data import SKILLS
 
 
 def decode_ability(data, ability):
@@ -15,7 +15,7 @@ def decode_skill(data, skill):
         modifier = decode_ability(data, SKILLS[skill])
         return modifier + bonus
     else:
-        return None
+        return data['proficiencies'][skill] + data['level']
 
 
 def decode_modifier(modifiers, field):
@@ -26,7 +26,6 @@ def decode_modifier(modifiers, field):
         return modifiers[field]
     else:
         return 0
-
 
 
 def query(prompt=None, default=None):
