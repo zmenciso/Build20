@@ -1,12 +1,15 @@
-import text
-from tools import decode_ability, decode_modifier
+from src import text
+from src import tools
+
 
 def write_strike(data, modifiers, outfile):
     for item in data['weapons']:
         prof = item['prof']
-        mod = data['proficiencies'][prof] + data['level'] + item['pot'] + decode_modifier(modifiers, item)
-        strength = decode_ability(data, 'str')
-        dex = decode_ability(data, 'dex')
+        mod = data['proficiencies'][prof] + data['level'] + item['pot'] + \
+            tools.decode_modifier(modifiers, item)
+
+        strength = tools.decode_ability(data, 'str')
+        dex = tools.decode_ability(data, 'dex')
 
         text.write_preamble(outfile, item['display'])
         print('{{Attack = ?{Attack', end='', file=outfile)

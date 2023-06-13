@@ -4,10 +4,10 @@ import json
 import sys
 import os
 
-import text
-from base import write_skills, write_throws
-from strike import write_strike
-from spells import write_spells
+from src import text
+from src import base
+from src import strike
+from src import spells
 
 # Globals
 OUTFILE = None
@@ -82,13 +82,13 @@ if __name__ == '__main__':
     else:
         modifiers = None
 
-    write_skills(data, modifiers, OUTFILE)
-    write_throws(data, modifiers, OUTFILE)
-    write_strike(data, modifiers, OUTFILE)
+    base.write_skills(data, modifiers, OUTFILE)
+    base.write_throws(data, modifiers, OUTFILE)
+    strike.write_strike(data, modifiers, OUTFILE)
     text.write_healing(OUTFILE)
 
     if spellfile:
-        write_spells(spellfile, data, modifiers, OUTFILE)
+        spells.write_spells(spellfile, data, modifiers, OUTFILE)
 
     if OUTFILE is not sys.stdout:
         text.cprint('OKGREEN', f'Successfully wrote "{fout}"')

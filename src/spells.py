@@ -1,9 +1,9 @@
 import yaml
 import re
 
-import text
-from tools import decode_ability, decode_skill, decode_modifier
-from data import STATS
+from src import text
+from src import tools
+from src import const
 
 
 def parse_yaml(infile):
@@ -20,8 +20,9 @@ def substitute(string, bonus, dc, data):
     string = re.sub('\\$attack', bonus, string)
     string = re.sub('\\$dc', dc, string)
 
-    for stat in STATS:
-        string = re.sub(f'\\${stat}', str(decode_ability(data, stat)), string)
+    for stat in const.STATS:
+        string = re.sub(f'\\${stat}',
+                        str(tools.decode_ability(data, stat)), string)
 
     return string
 
@@ -31,9 +32,9 @@ def write_spells(infile, stats, modifiers, outfile):
     casting_stat = data['Character']['Casting_stat'].lower()
     casting_type = 'casting' + data['Character']['Casting_type'].title()
 
-    bonus = decode_skill(stats, casting_type) + \
-        decode_ability(stats, casting_stat) + \
-        decode_modifier(modifiers, data['Character']['Casting_type'])
+    bonus = tools.decode_skill(stats, casting_type) + \
+        tools.decode_ability(stats, casting_stat) + \
+        tools.decode_modifier(modifiers, data['Character']['Casting_type'])
     dc = bonus + 10
 
     bonus = str(bonus)

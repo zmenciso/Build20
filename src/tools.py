@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import math
-from data import SKILLS
+from src import const
 
 
 def decode_ability(data, ability):
@@ -10,9 +10,9 @@ def decode_ability(data, ability):
 
 
 def decode_skill(data, skill):
-    if skill in SKILLS:
+    if skill in const.SKILLS:
         bonus = data['proficiencies'][skill] + data['level']
-        modifier = decode_ability(data, SKILLS[skill])
+        modifier = decode_ability(data, const.SKILLS[skill])
         return modifier + bonus
     else:
         return data['proficiencies'][skill] + data['level']
