@@ -83,4 +83,4 @@ Regain [[1d8]] HP | Lesser, **Lesser Healing Potion**
 Regain [[2d8+5]] HP | Moderate, **Moderate Healing Potion**
 Regain [[3d8+10]] HP | Greater, **Greater Healing Potion**
 Regain [[6d8+20]] HP | Major, **Major Healing Potion**
-Regain [[8d8+30]] HP}}}''', file=outfile)
+Regain [[8d8+30]] HP}}}\n''', file=outfile)
