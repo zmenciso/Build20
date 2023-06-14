@@ -47,3 +47,5 @@ def write_spells(infile, stats, modifiers, outfile):
             print('{{' + title + '= ', end='', file=outfile)
             print(substitute(content, bonus, dc, stats), end='', file=outfile)
             print('}}', end='', file=outfile)
+
+        print('\n', file=outfile)
