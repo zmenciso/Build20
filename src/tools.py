@@ -11,8 +11,15 @@ def decode_ability(data, ability):
 
 def decode_skill(data, skill):
     if skill in const.SKILLS:
-        bonus = data['proficiencies'][skill] + data['level']
+        if data['proficiencies'][skill]:
+            bonus = data['proficiencies'][skill] + data['level']
+        elif 'Untrained Improvisation' in [x[0] for x in data['feats']]:
+            bonus = data['proficiencies'][skill] + math.floor(data['level'] / 2)
+        else:
+            bonus = 0
+
         modifier = decode_ability(data, const.SKILLS[skill])
+
         return modifier + bonus
     else:
         return data['proficiencies'][skill] + data['level']
