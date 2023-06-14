@@ -40,7 +40,8 @@ example spell:
 Spells:
   Ignite Fireworks:
     Range: "60 ft"
-    Area: "10 ft burst"
+    Area: |-
+      ?{Metamagic| None, 10 ft burst | Widened, **Widened** 15 ft burst}
     Save: |-
       **REFLEX** DC [[$dc]]
     Damage: |-
