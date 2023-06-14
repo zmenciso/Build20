@@ -5,6 +5,7 @@ SAVES = {
     }
 
 SKILLS = {
+    'perception': 'wis',
     'acrobatics': 'dex',
     'arcana': 'int',
     'athletics': 'str',
