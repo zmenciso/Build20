@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import sys
-import text
 from random import randint
+
+from src.text import cprint, error
 
 
 # Globals
@@ -17,6 +18,14 @@ PROFICIENCY = {
     }
 HEALERS = dict()
 INJURED = dict()
+
+
+def usage(exitcode):
+    print(f'''{sys.argv[0]} [options] INPUT
+    -t  --time      VALUE   Maximum amount of time (hours)
+    -h  --help              Print this message''')
+
+    sys.exit(exitcode)
 
 
 def treat_wounds(prof='trained', skill=0, persist=1):
@@ -41,7 +50,7 @@ def parse_input(file):
     try:
         fin = open(file)
     except Exception as e:
-        text.error(f'Could not open {file} for reading ({e})', 2)
+        error(f'Could not open {file} for reading ({e})', 2)
 
     for line in fin:
         if line.lower().startswith('healer'):
@@ -95,18 +104,18 @@ if __name__ == '__main__':
     # Parse command line arguments
     while len(args) and args[0].startswith('-'):
         if args[0] == '-h' or args[0] == '--help':
-            text.usage_heal(0)
+            usage(0)
         elif args[0] == '-t' or args[0] == '--time':
             TIME = int(args.pop(1))
         elif args[0] == '-s' or args[0] == '--step':
             STEP = True
         else:
-            text.usage_heal(1)
+            usage(1)
 
         args.pop(0)
 
     if len(args) != 1:
-        text.usage_heal(1)
+        usage(1)
 
     parse_input(args[0])
 
@@ -114,7 +123,7 @@ if __name__ == '__main__':
     while TIME - e_time > 0 and injuries_present():
         e_time = e_time + strategic_treat()
 
-    text.cprint('OKBLUE', f'Time elapsed: {e_time} hours')
+    cprint('OKBLUE', f'Time elapsed: {e_time} hours')
     print()
 
     for char in INJURED:

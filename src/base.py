@@ -1,31 +1,44 @@
-from src import text
-from src import const
+from src.text import write_cap, write_preamble
+from src.const import SKILLS, SAVES
 from src import tools
 
 
 def write_throws(data, modifiers, outfile, header):
-    text.write_preamble(outfile, 'Saving Throws', header)
+    write_preamble(outfile, 'Saving Throws', header)
     print('{{Outcome = ?{Save', end='', file=outfile)
 
-    for throw, ability in const.SAVES.items():
+    for throw, ability in SAVES.items():
         bonus = data['proficiencies'][throw] + data['level']
         modifier = tools.decode_ability(data, ability)
         value = modifier + bonus + tools.decode_modifier(modifiers, throw)
         print(f'| {throw.title()}, **{throw.title()}** [[d20 + {value}]]',
               end='', file=outfile)
 
-    text.write_cap(outfile, end=header)
+    write_cap(outfile, end=header)
 
 
 def write_skills(data, modifiers, outfile, header):
-    text.write_preamble(outfile, 'Skill Check', header)
+    write_preamble(outfile, 'Skill Check', header)
     print('{{Outcome = ?{Skill', end='', file=outfile)
 
     for skill in data['proficiencies']:
-        if skill in const.SKILLS:
+        if skill in SKILLS:
             value = tools.decode_skill(data, skill) + \
                     tools.decode_modifier(modifiers, skill)
             print(f'| {skill.title()}, **{skill.title()}** [[d20 + {value}]]',
                   end='', file=outfile)
 
-    text.write_cap(outfile, end=header)
+    write_cap(outfile, end=header)
+
+
+def write_healing(outfile, header):
+    write_preamble(outfile, 'Healing Potion', header)
+
+    print('''{{Effect = ?{Potion| Minor, **Minor Healing Potion**
+Regain [[1d8]] HP | Lesser, **Lesser Healing Potion**
+Regain [[2d8+5]] HP | Moderate, **Moderate Healing Potion**
+Regain [[3d8+10]] HP | Greater, **Greater Healing Potion**
+Regain [[6d8+20]] HP | Major, **Major Healing Potion**
+Regain [[8d8+30]] HP''', file=outfile)
+
+    write_cap(outfile, end=header)

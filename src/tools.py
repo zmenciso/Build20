@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
 import math
-from src import const
+import json
+import os
+
+from src.const import SKILLS
+from src.text import error
 
 
 def decode_ability(data, ability):
@@ -10,7 +14,7 @@ def decode_ability(data, ability):
 
 
 def decode_skill(data, skill):
-    if skill in const.SKILLS:
+    if skill in SKILLS:
         if data['proficiencies'][skill]:
             bonus = data['proficiencies'][skill] + data['level']
         elif 'Untrained Improvisation' in [x[0] for x in data['feats']]:
@@ -18,7 +22,7 @@ def decode_skill(data, skill):
         else:
             bonus = 0
 
-        modifier = decode_ability(data, const.SKILLS[skill])
+        modifier = decode_ability(data, SKILLS[skill])
 
         return modifier + bonus
     else:
@@ -33,6 +37,18 @@ def decode_modifier(modifiers, field):
         return modifiers[field]
     else:
         return 0
+
+
+def parse_json(payload):
+    try:
+        data = json.loads(payload)
+    except Exception as e:
+        error(f'Could not parse json ({e})', 2)
+
+    if 'build' in data:
+        return data['build']
+    else:
+        error('Input JSON not a valid Pathbuilder2e output', 3)
 
 
 def query(prompt=None, default=None):
@@ -71,4 +87,4 @@ def print_format_table():
 
             print(s1)
 
-        print('\n')
+        print(os.linesep)
