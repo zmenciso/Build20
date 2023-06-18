@@ -3,8 +3,8 @@ from src import const
 from src import tools
 
 
-def write_throws(data, modifiers, outfile):
-    text.write_preamble(outfile, 'Saving Throws')
+def write_throws(data, modifiers, outfile, header):
+    text.write_preamble(outfile, 'Saving Throws', header)
     print('{{Outcome = ?{Save', end='', file=outfile)
 
     for throw, ability in const.SAVES.items():
@@ -14,11 +14,11 @@ def write_throws(data, modifiers, outfile):
         print(f'| {throw.title()}, **{throw.title()}** [[d20 + {value}]]',
               end='', file=outfile)
 
-    text.write_cap(outfile)
+    text.write_cap(outfile, end=header)
 
 
-def write_skills(data, modifiers, outfile):
-    text.write_preamble(outfile, 'Skill Check')
+def write_skills(data, modifiers, outfile, header):
+    text.write_preamble(outfile, 'Skill Check', header)
     print('{{Outcome = ?{Skill', end='', file=outfile)
 
     for skill in data['proficiencies']:
@@ -28,4 +28,4 @@ def write_skills(data, modifiers, outfile):
             print(f'| {skill.title()}, **{skill.title()}** [[d20 + {value}]]',
                   end='', file=outfile)
 
-    text.write_cap(outfile)
+    text.write_cap(outfile, end=header)

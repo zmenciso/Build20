@@ -1,7 +1,7 @@
 import sys
 import os
 
-HEADER = '&{template:default}'
+TEMPLATE = '&{template:default}'
 
 
 def cprint(color, string, end='\n', file=sys.stdout):
@@ -68,19 +68,27 @@ def write_preamble(outfile, title, header=True):
         print(bar(title))
     elif header:
         print(bar(title, length=80), file=outfile)
+    else:
+        print('#', file=outfile)
 
-    print(HEADER + '{{name= ' + title + '}}', end='', file=outfile)
-
-
-def write_cap(outfile, cap='}}}'):
-    print(cap + '\n', file=outfile)
+    print(TEMPLATE + '{{name= ' + title + '}}', end='', file=outfile)
 
 
-def write_healing(outfile):
-    write_preamble(outfile, 'Healing Potion')
+def write_cap(outfile, cap='}}}', end='\n'):
+    if end:
+        print(cap + end, file=outfile)
+    else:
+        print(cap, file=outfile)
+
+
+def write_healing(outfile, header):
+    write_preamble(outfile, 'Healing Potion', header)
+
     print('''{{Effect = ?{Potion| Minor, **Minor Healing Potion**
 Regain [[1d8]] HP | Lesser, **Lesser Healing Potion**
 Regain [[2d8+5]] HP | Moderate, **Moderate Healing Potion**
 Regain [[3d8+10]] HP | Greater, **Greater Healing Potion**
 Regain [[6d8+20]] HP | Major, **Major Healing Potion**
-Regain [[8d8+30]] HP}}}\n''', file=outfile)
+Regain [[8d8+30]] HP''', file=outfile)
+
+    write_cap(outfile, end=header)

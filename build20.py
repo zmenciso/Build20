@@ -11,6 +11,7 @@ from src import spells
 
 # Globals
 OUTFILE = None
+HEADER = '\n'
 
 
 # Functions
@@ -41,6 +42,8 @@ if __name__ == '__main__':
             fout = args.pop(1)
         elif args[0] == '-m' or args[0] == '--modfile':
             fmod = args.pop(1)
+        elif args[0] == '-n' or args[0] == '--noheader':
+            HEADER = None
         elif args[0] == '-s' or args[0] == '--spells':
             spellfile = args.pop(1)
         else:
@@ -82,13 +85,13 @@ if __name__ == '__main__':
     else:
         modifiers = None
 
-    base.write_skills(data, modifiers, OUTFILE)
-    base.write_throws(data, modifiers, OUTFILE)
-    strike.write_strike(data, modifiers, OUTFILE)
-    text.write_healing(OUTFILE)
+    base.write_skills(data, modifiers, OUTFILE, HEADER)
+    base.write_throws(data, modifiers, OUTFILE, HEADER)
+    strike.write_strike(data, modifiers, OUTFILE, HEADER)
+    text.write_healing(OUTFILE, HEADER)
 
     if spellfile:
-        spells.write_spells(spellfile, data, modifiers, OUTFILE)
+        spells.write_spells(spellfile, data, modifiers, OUTFILE, HEADER)
 
     if OUTFILE is not sys.stdout:
         text.cprint('OKGREEN', f'Successfully wrote "{fout}"')

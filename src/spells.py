@@ -27,7 +27,7 @@ def substitute(string, bonus, dc, data):
     return string
 
 
-def write_spells(infile, stats, modifiers, outfile):
+def write_spells(infile, stats, modifiers, outfile, header):
     data = parse_yaml(infile)
     casting_stat = data['Character']['Casting_stat'].lower()
     casting_type = 'casting' + data['Character']['Casting_type'].title()
@@ -41,11 +41,14 @@ def write_spells(infile, stats, modifiers, outfile):
     dc = str(dc)
 
     for spell, details in data['Spells'].items():
-        text.write_preamble(outfile, spell)
+        text.write_preamble(outfile, spell, header)
 
         for title, content in details.items():
             print('{{' + title + '= ', end='', file=outfile)
             print(substitute(content, bonus, dc, stats), end='', file=outfile)
             print('}}', end='', file=outfile)
 
-        print('\n', file=outfile)
+        if header:
+            print(header, file=outfile)
+        else:
+            print(file=outfile)
