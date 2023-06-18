@@ -20,6 +20,7 @@ Invoke the script like so:
     -f  --file      FILE    Write output to FILE
     -m  --modfile   FILE    Use the modifications in FILE
     -s  --spells    FILE    Also write macros for spells in FILE
+    -n  --noheader          Do not print headers (useful for Roll20 API)
     -h  --help              Print this message
 ```
 
