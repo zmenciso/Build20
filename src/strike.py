@@ -1,4 +1,6 @@
-from src import text
+import os
+
+from src.text import write_preamble
 from src import tools
 
 
@@ -11,7 +13,7 @@ def write_strike(data, modifiers, outfile, header):
         strength = tools.decode_ability(data, 'str')
         dex = tools.decode_ability(data, 'dex')
 
-        text.write_preamble(outfile, f"MELEE {item['display']}", header)
+        write_preamble(outfile, f"MELEE {item['display']}", header)
         print('{{Attack = ?{Attack', end='', file=outfile)
         for i in range(3):
             print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {strength} - {i * 5}]]',
@@ -19,10 +21,10 @@ def write_strike(data, modifiers, outfile, header):
         print('}}}', end='', file=outfile)
         print('{{Damage = ' + f'[[{item["die"]} + {strength}]]' + '}}')
 
-        text.write_preamble(outfile, f"RANGED {item['display']}", header)
+        write_preamble(outfile, f"RANGED {item['display']}", header)
         print('{{Attack = ?{Attack', end='', file=outfile)
         for i in range(3):
             print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {dex} - {i * 5}]]',
                   end='', file=outfile)
         print('}}}', end='', file=outfile)
-        print('{{Damage = ' + f'[[{item["die"]} + {dex}]]' + '}}\n')
+        print('{{Damage = ' + f'[[{item["die"]} + {dex}]]' + '}}' + os.linesep)

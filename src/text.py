@@ -4,7 +4,7 @@ import os
 TEMPLATE = '&{template:default}'
 
 
-def cprint(color, string, end='\n', file=sys.stdout):
+def cprint(color, string, end=os.linesep, file=sys.stdout):
     bcolors = {
         'HEADER': '\033[95m',
         'OKBLUE': '\033[94m',
@@ -45,25 +45,6 @@ def bar(header=None, char='#', length=os.get_terminal_size()[0]):
     return output
 
 
-def usage_build(exitcode):
-    print(f'''{sys.argv[0]} [options] INPUT
-    -f  --file      FILE    Write output to FILE
-    -m  --modfile   FILE    Use the modifications in FILE
-    -s  --spells    FILE    Also write macros for spells in FILE
-    -n  --noheader          Do not print headers (useful for Roll20 API)
-    -h  --help              Print this message''')
-
-    sys.exit(exitcode)
-
-
-def usage_heal(exitcode):
-    print(f'''{sys.argv[0]} [options] INPUT
-    -t  --time      VALUE   Maximum amount of time (hours)
-    -h  --help              Print this message''')
-
-    sys.exit(exitcode)
-
-
 def write_preamble(outfile, title, header=True):
     if outfile == sys.stdout and header:
         print(bar(title))
@@ -80,16 +61,3 @@ def write_cap(outfile, cap='}}}', end='\n'):
         print(cap + end, file=outfile)
     else:
         print(cap, file=outfile)
-
-
-def write_healing(outfile, header):
-    write_preamble(outfile, 'Healing Potion', header)
-
-    print('''{{Effect = ?{Potion| Minor, **Minor Healing Potion**
-Regain [[1d8]] HP | Lesser, **Lesser Healing Potion**
-Regain [[2d8+5]] HP | Moderate, **Moderate Healing Potion**
-Regain [[3d8+10]] HP | Greater, **Greater Healing Potion**
-Regain [[6d8+20]] HP | Major, **Major Healing Potion**
-Regain [[8d8+30]] HP''', file=outfile)
-
-    write_cap(outfile, end=header)
