@@ -1,9 +1,9 @@
 import yaml
 import re
 
-from src import text
-from src import tools
-from src import const
+from src.text import error, fprint, write_cap, write_preamble
+from src.tools import decode_skill, decode_ability, decode_modifier
+from src.const import STATS
 
 
 def parse_yaml(infile):
@@ -11,7 +11,7 @@ def parse_yaml(infile):
         with open(infile) as y:
             data = yaml.safe_load(y)
     except Exception as e:
-        text.error(f'Could not parse yaml ({e})', 2)
+        error(f'Could not parse yaml ({e})', 10)
 
     return data
 
@@ -20,9 +20,9 @@ def substitute(string, bonus, dc, data):
     string = re.sub('\\$attack', bonus, string)
     string = re.sub('\\$dc', dc, string)
 
-    for stat in const.STATS:
+    for stat in STATS:
         string = re.sub(f'\\${stat}',
-                        str(tools.decode_ability(data, stat)), string)
+                        str(decode_ability(data, stat)), string)
 
     return string
 
@@ -32,21 +32,21 @@ def write_spells(infile, stats, modifiers, outfile, header):
     casting_stat = data['Character']['Casting_stat'].lower()
     casting_type = 'casting' + data['Character']['Casting_type'].title()
 
-    bonus = tools.decode_skill(stats, casting_type) + \
-        tools.decode_ability(stats, casting_stat) + \
-        tools.decode_modifier(modifiers, data['Character']['Casting_type'])
+    bonus = decode_skill(stats, casting_type) + \
+        decode_ability(stats, casting_stat) + \
+        decode_modifier(modifiers, data['Character']['Casting_type'])
     dc = bonus + 10
 
     bonus = str(bonus)
     dc = str(dc)
 
     for spell, details in data['Spells'].items():
-        text.write_preamble(outfile, spell, header)
+        write_preamble(outfile, spell, header)
 
         for title, content in details.items():
-            print('{{' + title + '= ', end='', file=outfile)
-            print(substitute(content, bonus, dc, stats), end='', file=outfile)
-            print('}}', end='', file=outfile)
+            fprint('{{' + title + '= ', header, file=outfile)
+            fprint(substitute(content, bonus, dc, stats), header, file=outfile)
+            write_cap(outfile, cap='}}', end='')
 
         if header:
             print(header, file=outfile)
