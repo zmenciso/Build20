@@ -50,9 +50,14 @@ if __name__ == '__main__':
         args.pop(0)
 
     if len(args) < 1:
-        usage(1)
+        cprint('HEADER', 'Paste your JSON output below:')
+        stats = sys.stdin.read()
     else:
-        stats = os.path.realpath(args.pop(0))
+        try:
+            jsonfile = args.pop(0)
+            stats = open(os.path.realpath(jsonfile)).read()
+        except Exception as e:
+            error(f'Could not open file "{jsonfile}" for reading ({e})', 5)
 
     if fout:
         try:
@@ -73,7 +78,7 @@ if __name__ == '__main__':
             error(f'Could not open file "{fmod}" ({e})', 4)
 
         for line in m:
-            line = line.strip().lower()
+            line = line.strip()
             if not line.startswith('#') and line:
                 try:
                     modifiers[line.split()[0]] = int(line.split()[1])

@@ -39,10 +39,9 @@ def decode_modifier(modifiers, field):
         return 0
 
 
-def parse_json(infile):
+def parse_json(payload):
     try:
-        with open(infile) as j:
-            data = json.loads(j.read())
+        data = json.loads(payload)
     except Exception as e:
         error(f'Could not parse json ({e})', 2)
 
