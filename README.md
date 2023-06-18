@@ -25,7 +25,7 @@ Invoke the script like so:
 ```
 
 The `INPUT` should be a Pathbuilder 2e formatted JSON file ("Menu" > "Export" >
-"Export JSON").
+"Export JSON").  You can also paste the JSON in by not specifying an input file.
 
 Copy the macro after each header into a new Roll20 macro.
 
@@ -70,8 +70,9 @@ Any field (skill check, saving throw, etc.) can be **modified** with an integer
 value by using the `-m` or `--modfile` switch and supplying a **modifications
 file**.  Each modification is of the form `FIELD MODIFICATION`, where `FIELD` is
 the name of the field and `MODIFICATION` is an integer value.  This file must be
-line-delimited, and lines starting with `#` are treated as comments.  For
-example, this file might look like:
+line-delimited, and lines starting with `#` are treated as comments.  Make sure
+the `FIELD` exactly matches the Pathbuilder JSON output.  For example, this file
+might look like:
 
 ```
 # Clumsy -1
@@ -81,7 +82,7 @@ thievery -1
 reflex -1
 ```
 
-To modify spells, use the caster type (e.g. "Divine").  To modify attack rolls,
+To modify spells, use the caster type (e.g. "castingDivine").  To modify attack rolls,
 use the name of the weapon (e.g. "Large +1 Greatsword").
 
 ##  `heal.py`
