@@ -1,7 +1,9 @@
 import sys
+import re
 import os
 
 TEMPLATE = '&{template:default}'
+NEWLINE = '$newline'
 
 
 def cprint(color, string, end=os.linesep, file=sys.stdout):
@@ -25,6 +27,13 @@ def cprint(color, string, end=os.linesep, file=sys.stdout):
     tail = '\x1b[0m'
 
     print(head + string + tail, end=end, file=file)
+
+
+def fprint(string, header, file=sys.stdout):
+    if not header:
+        print(re.sub(os.linesep, NEWLINE, string), end='', file=file)
+    else:
+        print(string, end='', file=file)
 
 
 def error(message, exitcode=None):
@@ -56,8 +65,8 @@ def write_preamble(outfile, title, header=True):
     print(TEMPLATE + '{{name= ' + title + '}}', end='', file=outfile)
 
 
-def write_cap(outfile, cap='}}}', end='\n'):
+def write_cap(outfile, cap='}}}', end=os.linesep):
     if end:
-        print(cap + end, file=outfile)
+        print(cap + end, file=outfile, end=end)
     else:
-        print(cap, file=outfile)
+        print(cap, file=outfile, end=end)
