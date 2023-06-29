@@ -55,7 +55,7 @@ def compose_spell(URL):
             continue
 
         desc = re.sub(r'([0-9]d[0-9])', r'[[\1]]', desc)
-        desc = re.sub(r'(\s?[-+]?[0-9]+\s?)', '**\\1**', desc)
+        desc = re.sub(r'([^\[d0-9][-+]?[0-9]+[^\]d0-9])', '**\\1**', desc)
         desc = re.sub(r'(\S+\sdamage)', '**\\1**', desc)
 
         desc = re.sub('DC', '**DC $dc**', desc)
