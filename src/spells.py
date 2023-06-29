@@ -8,10 +8,12 @@ from src.const import STATS
 
 
 # TODO: Compile all the regex ahead of time
+# TODO: Add support for heightened spells
 
 CLEANER = r'<a style=.*?>|<a href=.*?>|<\/a>'
 
 MATCHES = {
+    'Cast': r"<b>Cast<\/b>.*?title='([A-Za-z\s]+)'",
     'Range': r'<b>Range<\/b>\s?([\s0-9A-Za-z\-]+)',
     'Targets': r'<b>Targets<\/b>\s?([\s0-9A-Za-z\-]+)',
     'Area': r'<b>Area<\/b>\s?([\s0-9A-Za-z\-]+)',
@@ -53,7 +55,7 @@ def compose_spell(URL):
             continue
 
         desc = re.sub(r'([0-9]d[0-9])', r'[[\1]]', desc)
-        desc = re.sub(r'(\s-?[0-9]+\s)', '**\\1**', desc)
+        desc = re.sub(r'(\s?[-+]?[0-9]+\s?)', '**\\1**', desc)
         desc = re.sub(r'(\S+\sdamage)', '**\\1**', desc)
 
         desc = re.sub('DC', '**DC $dc**', desc)
@@ -62,6 +64,9 @@ def compose_spell(URL):
             desc = re.sub('spell attack', 'spell attack: [[d20 + $attack]]', desc)
             desc = re.sub(r'<br \/>\s?', '\n', desc)
             desc = re.sub(r'<b>(.*?)<\/b>', '**\\1**', desc)
+            desc = re.sub(r'<i>(.*?)<\/i>', '*\\1*', desc)
+        else:
+            desc = desc.capitalize()
 
         details[prop] = desc
 
