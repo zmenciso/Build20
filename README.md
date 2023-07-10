@@ -31,30 +31,28 @@ Copy the macro after each header into a new Roll20 macro.
 
 ### Spells
 
-Build20 can also generate spell macros by using a YAML file.  Copy
-`template.yaml` and fill in your caster stat (e.g. "Wis") and your casting type
-("e.g. Divine").  Then, add your spells after the `Spells:` key.  Spells consist
-of arbitrary key/value pairs (nesting not supported) **OR** a single AoN URL.
-Build20 will attempt to write the spell for you using the URL.  The following is
-an example spell:
+Build20 will also attempt to generate spell macros.  You can improve the spell
+descriptions by writing them yourself in a YAML file and specifying the file
+with the `-s` or `--spells` switch.  Spells consist of arbitrary key/value pairs
+(nesting not supported), and the name of the spell must exactly match.  Build20
+will not automatically generate spells for spells you describe in the YAML file.
+The following is an example spell:
 
 ```yaml
-Spells:
-  Ignite Fireworks:
-    Range: "60 ft"
-    Area: |-
-      ?{Metamagic| None, 10 ft burst | Widened, **Widened** 15 ft burst}
-    Save: |-
-      **REFLEX** DC [[$dc]]
-    Damage: |-
-      [[1d8]] fire damage
-      [[1d8]] sonic damage
-    Effect: |-
-      **Critical Success** The creature is unaffected.
-      **Success** The creature takes half damage and is dazzled for [[1]] round.
-      **Failure** The creature takes full damage and is dazzled for [[3]] rounds.
-      **Critical Failure** The creature takes double damage, takes [[1d4]] persistent fire damage, and is dazzled for [[1]] minute.
-  Tanglefoot: "https://2e.aonprd.com/Spells.aspx?ID=330"
+Ignite Fireworks:
+  Range: "60 ft"
+  Area: |-
+    ?{Metamagic| None, 10 ft burst | Widened, **Widened** 15 ft burst}
+  Save: |-
+    **REFLEX** DC [[$dc]]
+  Damage: |-
+    [[1d8]] fire damage
+    [[1d8]] sonic damage
+  Effect: |-
+    **Critical Success** The creature is unaffected.
+    **Success** The creature takes half damage and is dazzled for [[1]] round.
+    **Failure** The creature takes full damage and is dazzled for [[3]] rounds.
+    **Critical Failure** The creature takes double damage, takes [[1d4]] persistent fire damage, and is dazzled for [[1]] minute.
 ```
 
 #### Substitutions

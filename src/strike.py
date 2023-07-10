@@ -1,8 +1,7 @@
-import os
-
 from src.text import write_preamble, fprint, write_cap
-from src import tools
 
+
+# TODO: Add support for extra damage (sneak, deadly, etc.)
 
 RUNES = {
     'striking': 2,
@@ -10,39 +9,27 @@ RUNES = {
     'majorStriking': 4
     }
 
+DAMAGE = {
+    'S': 'slashing',
+    'P': 'piercing',
+    'B': 'bludgeoning'
+    }
+
 
 def write_strike(data, modifiers, outfile, header):
     for item in data['weapons']:
-        prof = item['prof']
+        damage = f'[[{RUNES[item["str"]]}{item["die"]} + {item["damageBonus"]}]] '
 
-        # Assume character is not untrained with their weapon
-        mod = data['proficiencies'][prof] + data['level'] + item['pot'] + \
-            tools.decode_modifier(modifiers, item)
+        if item['damageType'] in DAMAGE:
+            damage = damage + DAMAGE[item['damageType']]
 
-        strength = tools.decode_ability(data, 'str')
-        dex = tools.decode_ability(data, 'dex')
-
-        damage = f'{RUNES[item["str"]]}{item["die"]}'
-
-        write_preamble(outfile, f"Melee {item['display']}", header)
+        write_preamble(outfile, f"{item['display']}", header)
         fprint('{{Attack = ?{Attack', header, file=outfile)
 
         for i in range(3):
-            fprint(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {strength} - {i * 5}]]',
+            fprint(f'| Attack {i+1}, Attack {i+1} [[d20 + {item["attack"]} - {i * 5}]]',
                    header, file=outfile)
-
         write_cap(outfile, end='')
-        fprint('{{Damage = ' + f'[[{damage} + {strength}]]' + '}}',
-               header, file=outfile)
-        write_cap(outfile, cap='')
 
-        write_preamble(outfile, f"Ranged {item['display']}", header)
-        fprint('{{Attack = ?{Attack', header, file=outfile)
-
-        for i in range(3):
-            print(f'| Attack {i+1}, Attack {i+1} [[d20 + {mod} + {dex} - {i * 5}]]',
-                  end='', file=outfile)
-
-        write_cap(outfile, end='')
-        fprint('{{Damage = ' + f'[[{damage}]]' + '}}' + os.linesep,
-               header, file=outfile)
+        fprint('{{Damage = ' + damage, header, file=outfile)
+        write_cap(outfile, cap='}}')

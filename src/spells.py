@@ -9,6 +9,7 @@ from src.const import STATS
 
 # TODO: Compile all the regex ahead of time
 # TODO: Add support for heightened spells
+# TODO: Focus spells
 
 CLEANER = r'<a style=.*?>|<a href=.*?>|<\/a>'
 
@@ -21,6 +22,18 @@ MATCHES = {
     'Saving Throw': r'<b>Saving Throw<\/b>\s?([\s0-9A-Za-z\-]+)',
     'Effect': r'<hr \/>(.*)<ul><\/ul><hr \/>'
     }
+
+SPELL_LIST = requests.get('https://2e.aonprd.com/SpellLists.aspx').text
+
+
+def find_spell(spell_list, name):
+    spell_search = r'<a href="Spells\.aspx\?ID=([0-9]+)"><b><u>' + name
+    spell_id = re.search(spell_search, spell_list)
+
+    if spell_id:
+        return 'https://2e.aonprd.com/Spells.aspx?ID=' + spell_id.group(1)
+
+    return spell_id
 
 
 def parse_yaml(infile):
@@ -73,34 +86,67 @@ def compose_spell(URL):
     return details
 
 
-def write_spells(infile, stats, modifiers, outfile, header):
-    data = parse_yaml(infile)
-    casting_stat = data['Character']['Casting_stat'].lower()
-    casting_type = 'casting' + data['Character']['Casting_type'].title()
-
-    bonus = decode_skill(stats, casting_type) + \
-        decode_ability(stats, casting_stat) + \
-        decode_modifier(modifiers, data['Character']['Casting_type'])
-    dc = bonus + 10
-
+def print_spell_details(spell, data, bonus, stats, outfile, header):
+    dc = str(bonus + 10)
     bonus = str(bonus)
-    dc = str(dc)
 
-    for spell, details in data['Spells'].items():
-        if type(details) == str and '2e.aonprd.com' in details:
-            details = compose_spell(details)
-        elif type(details) == str:
-            error(f'Cannot decode URL {details} for spell {spell}')
-            continue
+    if spell in data:
+        details = data[spell]
+    else:
+        url = find_spell(SPELL_LIST, spell)
 
-        write_preamble(outfile, spell, header)
-
-        for title, content in details.items():
-            fprint('{{' + title + '= ', header, file=outfile)
-            fprint(substitute(content, bonus, dc, stats), header, file=outfile)
-            write_cap(outfile, cap='}}', end='')
-
-        if header:
-            print(header, file=outfile)
+        if url:
+            details = compose_spell(url)
         else:
-            print(file=outfile)
+            return
+
+    write_preamble(outfile, spell, header)
+
+    for title, content in details.items():
+        fprint('{{' + title + '= ', header, file=outfile)
+        fprint(substitute(content, bonus, dc, stats), header, file=outfile)
+        write_cap(outfile, cap='}}', end='')
+
+    if header:
+        print(header, file=outfile)
+    else:
+        print(file=outfile)
+
+
+def write_spells(infile, stats, modifiers, outfile, header):
+    if infile:
+        data = parse_yaml(infile)
+
+    for caster in stats['spellCasters']:
+        casting_stat = caster['ability']
+        tradition = caster['magicTradition']
+        casting_type = 'casting' + tradition.capitalize()
+
+        bonus = decode_skill(stats, casting_type) + \
+            decode_ability(stats, casting_stat) + \
+            decode_modifier(modifiers, tradition)
+
+        spells = set(sum([spell['list'] for spell in stats['spellCasters'][0]['spells']], []))
+
+        for spell in spells:
+            print_spell_details(spell, data, bonus, stats, outfile, header)
+
+
+def write_focus(infile, stats, modifiers, outfile, header):
+    if infile:
+        data = parse_yaml(infile)
+
+    for tradition, caster in stats['focus'].items():
+        casting_stat = list(caster.keys())[0]
+        casting_type = 'casting' + tradition.capitalize()
+
+        caster = caster[casting_stat]
+
+        bonus = decode_skill(stats, casting_type) + \
+            decode_ability(stats, casting_stat) + \
+            decode_modifier(modifiers, tradition)
+
+        spells = caster['focusSpells']
+
+        for spell in spells:
+            print_spell_details(spell, data, bonus, stats, outfile, header)
