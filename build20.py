@@ -7,7 +7,7 @@ from src.tools import parse_json
 from src.text import error, cprint
 from src.base import write_skills, write_throws, write_healing
 from src.strike import write_strike
-from src.spells import write_spells
+from src.spells import write_spells, write_focus
 
 # Globals
 OUTFILE = None
@@ -49,9 +49,11 @@ if __name__ == '__main__':
 
         args.pop(0)
 
-    if len(args) < 1:
+    if len(args) > 1:
+        error('Too many arguments', 13)
+    elif len(args) < 1:
         cprint('HEADER', 'Paste your JSON output below:')
-        stats = sys.stdin.read()
+        stats = sys.stdin.readline()
     else:
         try:
             jsonfile = args.pop(0)
@@ -92,9 +94,8 @@ if __name__ == '__main__':
     write_throws(data, modifiers, OUTFILE, HEADER)
     write_strike(data, modifiers, OUTFILE, HEADER)
     write_healing(OUTFILE, HEADER)
-
-    if spellfile:
-        write_spells(spellfile, data, modifiers, OUTFILE, HEADER)
+    write_spells(spellfile, data, modifiers, OUTFILE, HEADER)
+    write_focus(spellfile, data, modifiers, OUTFILE, HEADER)
 
     if OUTFILE is not sys.stdout:
         cprint('OKGREEN', f'Successfully wrote "{fout}"')
