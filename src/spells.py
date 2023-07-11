@@ -68,7 +68,9 @@ def compose_spell(URL):
 
         desc = re.sub(r'([0-9]d[0-9\.]+)', r'[[\1]]', desc)
         desc = re.sub(r'(\S+\sdamage)', '**\\1**', desc)
-        desc = re.sub(r'([0-9+-]*?\s[a-zA-z]+\sbonus)', '**\\1**', desc)
+        desc = re.sub(r'\*\*and damage\*\*', 'and damage', desc)
+        desc = re.sub(r'([0-9+-]*\s[a-zA-z]+\sbonus)', '**\\1**', desc)
+        desc = re.sub(r'([0-9+-]*\s[a-zA-z]+\spenalty)', '**\\1**', desc)
         desc = re.sub(r'<b>(.*?)<\/b>', '**\\1**', desc)
         desc = re.sub(r'<i>(.*?)<\/i>', '*\\1*', desc)
 
@@ -81,7 +83,7 @@ def compose_spell(URL):
 
         for t in TIME:
             if t in desc.lower():
-                desc = re.sub(f'(\\S+\\s{t}[s]?)', '**\\1**',
+                desc = re.sub(f'([0-9]+\\s{t}[s]?)', '**\\1**',
                               desc, flags=re.IGNORECASE)
 
         if prop == 'Effect':
