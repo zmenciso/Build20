@@ -33,3 +33,41 @@ STATS = {
     'wis',
     'cha'
     }
+
+TIME = {
+    'round',
+    'minute',
+    'hour',
+    'day'
+    }
+
+CONDITIONS = {
+    'friendly',
+    'helpful',
+    'hostile',
+    'indifferent',
+    'unfriendly',
+    'doomed',
+    'dying',
+    'unconscious',
+    'wounded',
+    'hidden',
+    'observed',
+    'undetected',
+    'unnoticed',
+    'clumsy',
+    'drained',
+    'enfeebled',
+    'stupefied',
+    'blinded',
+    'concealed',
+    'dazzled',
+    'deafened',
+    'invisible',
+    'stunned',
+    'slowed',
+    'quickened',
+    'petrified',
+    'sickened',
+    'restrained'
+    }
