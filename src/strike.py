@@ -1,11 +1,12 @@
 from src.text import write_preamble, fprint, write_cap
+from src.const import RUNES
 
 
 # TODO: Add support for extra damage (sneak, deadly, etc.)
 # TODO: Deal with crits better
 # TODO: Add support for agile, finesse
 
-RUNES = {
+STRIKING = {
     '': 1,
     'striking': 2,
     'greaterStriking': 3,
@@ -28,7 +29,7 @@ SNEAK = {
 
 def write_strike(data, modifiers, outfile, header):
     for item in data['weapons']:
-        damage = f'[[{RUNES[item["str"]]}{item["die"]} + {item["damageBonus"]}]] '
+        damage = f'[[{STRIKING[item["str"]]}{item["die"]} + {item["damageBonus"]}]] '
 
         if item['damageType'] in DAMAGE:
             damage = damage + DAMAGE[item['damageType']]
@@ -51,8 +52,16 @@ def write_strike(data, modifiers, outfile, header):
         if len(item['runes']) > 0:
             write_cap(outfile, cap='}}', end='')
 
-            fprint('{{Runes = ' + item['runes'][0], header, file=outfile)
-            for rune in item['runes'][1:]:
-                fprint(f'\n{rune}', header, file=outfile)
+            for rune in item['runes']:
+                if rune in RUNES:
+                    desc = RUNES[rune]
+                else:
+                    desc = 'No description'
 
-        write_cap(outfile, cap='}}')
+                fprint('{{' + f'{rune} = ' + desc, header, file=outfile)
+                write_cap(outfile, cap='}}', end='')
+
+            write_cap(outfile, cap='')
+
+        else:
+            write_cap(outfile, cap='}}')
