@@ -16,10 +16,11 @@ Convert Pathbuilder 2e JSON output to Roll20 macros!
 Invoke the script like so:
 
 ```
-./build20.py [options] INPUT
-    -f  --file      FILE    Write output to FILE
+./build20.py [options] [INPUT]
+    -o  --output    FILE    Write output to FILE
     -m  --modfile   FILE    Use the modifications in FILE
     -s  --spells    FILE    Also write macros for spells in FILE
+    -c  --custom    FILE    Write custom macros contained in FILE
     -n  --noheader          Do not print headers (useful for Roll20 API)
     -h  --help              Print this message
 ```
@@ -55,14 +56,16 @@ Ignite Fireworks:
     **Critical Failure** The creature takes double damage, takes [[1d4]] persistent fire damage, and is dazzled for [[1]] minute.
 ```
 
+> You can also add images to your custom spells by including a `img` tag with
+> the image's URL.
+
 #### Substitutions
 
 The spells YAML format currently supports three substitutions:
   - `$attack` will be replaced by your caster attack bonus (caster stat +
     proficiency bonus)
   - `$dc` will be replaced by your caster DC
-  - `$[STAT]` will be replaced by your bonus for `STAT` (e.g. `$cha` will be
-    replaced by your charisma bonus)
+  - `$mod` will be replaced by your spellcasting modifier
 
 ### Modifications File
 
@@ -84,6 +87,44 @@ reflex -1
 
 To modify spells, use the caster type (e.g. "castingDivine").  To modify attack rolls,
 use the name of the weapon (e.g. "Large +1 Greatsword").
+
+### Custom Macros
+
+You can write custom macros in YAML, and Build20 will convert them to Roll20
+macros using the `-c` or `--custom` switch.  Each custom macro consists of
+arbitrary key/value paris (nesting not supported).
+
+> You can also add images to your custom macros by including a `img` tag with
+> the image's URL.
+
+#### Substitutions
+
+Custom macros support much more diverse substitutions.
+
+  - Abilities: `$abl_TAG` Replace TAG with your ability of choice (e.g. `wis,
+    cha`)
+  - Skills : `$skl_TAG` Replace TAG with your proficiency of choice (e.g.
+    `athletics`, `castingPrimal`, `martial`, `unarmored`)
+  - Modifier: `$mod_TAG` Replace TAG with your modifier of choice
+  - Weapons: `$mod_ID_TAG` Replace ID with your weapon ID (0-indexed, so the
+    first weapon on your sheet has ID 0), and replace TAG with your property of
+    choice (e.g. `attack`, `damageBonus`, `die`)
+
+The following is a phony example ability to demonstrate how substitutions work:
+
+```yaml
+Foo:
+  img: 'https://yld.me/raw/hFKA.png'
+  Range: '$mod_potato ft'
+  Attack: '[[d20 + $wep_0_attack]]'
+  Effect: |-
+    Make a acrobatics check [[d20 + $skl_acrobatics]]. Target takes $abl_wis **sonic damage**.
+```
+
+```text
+# Modifiers file
+potato 10
+```
 
 ##  `heal.py`
 
