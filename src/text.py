@@ -54,13 +54,16 @@ def bar(header=None, char='#', length=os.get_terminal_size()[0]):
     return output
 
 
-def write_preamble(outfile, title, header=True):
+def write_preamble(outfile, title, header=True, img=None):
     if outfile == sys.stdout and header:
         print(bar(title))
     elif header:
         print(bar(title, length=80), file=outfile)
     else:
         print('#', file=outfile)
+
+    if img:
+        title = title + f'[{title}]({img})'
 
     print(TEMPLATE + '{{name= ' + title + '}}', end='', file=outfile)
 
