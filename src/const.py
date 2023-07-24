@@ -71,3 +71,5 @@ CONDITIONS = {
     'sickened',
     'restrained'
     }
+
+CLEANER = r'<a style=.*?>|<a href=.*?>|<\/a>'
