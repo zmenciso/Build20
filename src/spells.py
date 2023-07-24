@@ -114,8 +114,7 @@ def print_spell_details(spell, data, bonus, mod, stats, outfile, header):
             return
 
     if 'img' in details:
-        write_preamble(outfile, spell, header, details['img'])
-        del details['img']
+        write_preamble(outfile, spell, header, details.pop('img'))
     else:
         write_preamble(outfile, spell, header)
 

@@ -47,8 +47,7 @@ def write_custom(infile, stats, modifiers, outfile, header):
 
     for custom, details in data.items():
         if 'img' in details:
-            write_preamble(outfile, custom, header, details['img'])
-            del custom['img']
+            write_preamble(outfile, custom, header, details.pop('img'))
         else:
             write_preamble(outfile, custom, header)
 
