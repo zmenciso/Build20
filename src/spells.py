@@ -1,18 +1,14 @@
-import yaml
 import re
 import requests
 import os
 
-from src.text import error, fprint, write_cap, write_preamble
-from src.tools import decode_skill, decode_ability, decode_modifier
-from src.const import STATS, CONDITIONS, TIME
+from src.text import fprint, write_cap, write_preamble
+from src.tools import decode_skill, decode_ability, decode_modifier, parse_yaml
+from src.const import CONDITIONS, TIME, CLEANER
 
 
 # TODO: Compile all the regex ahead of time
 # TODO: Add support for heightened spells
-# TODO: Focus spells
-
-CLEANER = r'<a style=.*?>|<a href=.*?>|<\/a>'
 
 MATCHES = {
     'Cast': r"<b>Cast<\/b>.*?title='([A-Za-z\s]+)'",
@@ -36,16 +32,6 @@ def find_spell(spell_list, name):
         return 'https://2e.aonprd.com/Spells.aspx?ID=' + spell_id.group(1)
 
     return spell_id
-
-
-def parse_yaml(infile):
-    try:
-        with open(infile) as y:
-            data = yaml.safe_load(y)
-    except Exception as e:
-        error(f'Could not parse yaml ({e})', 10)
-
-    return data
 
 
 def substitute(string, bonus, dc, mod, data):
@@ -117,7 +103,11 @@ def print_spell_details(spell, data, bonus, mod, stats, outfile, header):
         else:
             return
 
-    write_preamble(outfile, spell, header)
+    if 'img' in details:
+        write_preamble(outfile, spell, header, details['img'])
+        del details['img']
+    else:
+        write_preamble(outfile, spell, header)
 
     for title, content in details.items():
         fprint('{{' + title + '= ', header, file=outfile)
