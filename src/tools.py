@@ -1,11 +1,22 @@
 #!/usr/bin/env python
 
+import yaml
 import math
 import json
 import os
 
 from src.const import SKILLS
 from src.text import error
+
+
+def parse_yaml(infile):
+    try:
+        with open(infile) as y:
+            data = yaml.safe_load(y)
+    except Exception as e:
+        error(f'Could not parse yaml ({e})', 10)
+
+    return data
 
 
 def decode_ability(data, ability):
@@ -25,6 +36,7 @@ def decode_skill(data, skill):
         modifier = decode_ability(data, SKILLS[skill])
 
         return modifier + bonus
+
     else:
         return data['proficiencies'][skill] + data['level']
 
