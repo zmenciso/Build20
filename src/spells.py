@@ -1,28 +1,43 @@
-import yaml
 import re
 import requests
 import os
 
-from src.text import error, fprint, write_cap, write_preamble
-from src.tools import decode_skill, decode_ability, decode_modifier
-from src.const import STATS, CONDITIONS, TIME
+from src.text import fprint, write_cap, write_preamble
+from src.tools import decode_skill, decode_ability, decode_modifier, parse_yaml
+from src.const import CONDITIONS, TIME, CLEANER
 
 
 # TODO: Compile all the regex ahead of time
 # TODO: Add support for heightened spells
-# TODO: Focus spells
-
-CLEANER = r'<a style=.*?>|<a href=.*?>|<\/a>'
 
 MATCHES = {
-    'Cast': r"<b>Cast<\/b>.*?title='([A-Za-z\s]+)'",
-    'Cost': r'<b>Cost<\/b>\s*([\s0-9A-Za-z\-<>\/]+)<br',
-    'Range': r'<b>Range<\/b>\s?([\s0-9A-Za-z\-]+)',
-    'Targets': r'<b>Targets<\/b>\s?([\s0-9A-Za-z\-]+)',
-    'Area': r'<b>Area<\/b>\s?([\s0-9A-Za-z\-]+)',
-    'Duration': r'<b>Duration<\/b>\s?([\s0-9A-Za-z\-]+)',
-    'Saving Throw': r'<b>Saving Throw<\/b>\s?([\s0-9A-Za-z\-]+)',
-    'Effect': r'<hr \/>(.*)<ul><\/ul><',
+    'Cast': re.compile(r"<b>Cast<\/b>.*?title='([A-Za-z\s]+)'"),
+    'Cost': re.compile(r'<b>Cost<\/b>\s*([\s0-9A-Za-z\-<>\/]+)<br'),
+    'Range': re.compile(r'<b>Range<\/b>\s?([\s0-9A-Za-z\-]+)'),
+    'Targets': re.compile(r'<b>Targets<\/b>\s?([\s0-9A-Za-z\-]+)'),
+    'Area': re.compile(r'<b>Area<\/b>\s?([\s0-9A-Za-z\-]+)'),
+    'Duration': re.compile(r'<b>Duration<\/b>\s?([\s0-9A-Za-z\-]+)'),
+    'Saving Throw': re.compile(r'<b>Saving Throw<\/b>\s?([\s0-9A-Za-z\-]+)'),
+    'Effect': re.compile(r'<hr \/>(.*)<ul><\/ul><'),
+    }
+
+SUB = {
+    'general': {
+        re.compile(r'([0-9]d[0-9\.]+)'): r'[[\1]]',
+        re.compile(r'(\S+\sdamage)'): '**\\1**',
+        re.compile(r'\*\*and damage\*\*'): 'and damage',
+        re.compile(r'([0-9+-]*\s[a-zA-z]+\sbonus)'): '**\\1**',
+        re.compile(r'([0-9+-]*\s[a-zA-z]+\spenalty)'): '**\\1**',
+        re.compile(r'<b>(.*?)<\/b>'): '**\\1**',
+        re.compile(r'<i>(.*?)<\/i>'): '*\\1*',
+        re.compile('DC'): '**DC $dc**'
+        },
+    'effect': {
+        re.compile('spell attack'): 'spell attack: [[d20 + $attack]]',
+        re.compile(']] .* spellcasting modifier'): ' + $mod]]',
+        re.compile(r'<br \/>\s?'): '\n',
+        re.compile(r'<[\/uli]+?><[\/uli]+?>'): os.linesep
+        }
     }
 
 SPELL_LIST = requests.get('https://2e.aonprd.com/SpellLists.aspx').text
@@ -38,16 +53,6 @@ def find_spell(spell_list, name):
     return spell_id
 
 
-def parse_yaml(infile):
-    try:
-        with open(infile) as y:
-            data = yaml.safe_load(y)
-    except Exception as e:
-        error(f'Could not parse yaml ({e})', 10)
-
-    return data
-
-
 def substitute(string, bonus, dc, mod, data):
     string = re.sub('\\$attack', bonus, string)
     string = re.sub('\\$dc', dc, string)
@@ -61,20 +66,13 @@ def compose_spell(URL):
     details = dict()
 
     for prop, match in MATCHES.items():
-        if result := re.search(match, content):
+        if result := match.search(content):
             desc = result.group(1)
         else:
             continue
 
-        desc = re.sub(r'([0-9]d[0-9\.]+)', r'[[\1]]', desc)
-        desc = re.sub(r'(\S+\sdamage)', '**\\1**', desc)
-        desc = re.sub(r'\*\*and damage\*\*', 'and damage', desc)
-        desc = re.sub(r'([0-9+-]*\s[a-zA-z]+\sbonus)', '**\\1**', desc)
-        desc = re.sub(r'([0-9+-]*\s[a-zA-z]+\spenalty)', '**\\1**', desc)
-        desc = re.sub(r'<b>(.*?)<\/b>', '**\\1**', desc)
-        desc = re.sub(r'<i>(.*?)<\/i>', '*\\1*', desc)
-
-        desc = re.sub('DC', '**DC $dc**', desc)
+        for m, sub in SUB['general'].items():
+            desc = m.sub(sub, desc)
 
         for condition in CONDITIONS:
             if condition in desc.lower():
@@ -87,10 +85,8 @@ def compose_spell(URL):
                               desc, flags=re.IGNORECASE)
 
         if prop == 'Effect':
-            desc = re.sub('spell attack', 'spell attack: [[d20 + $attack]]', desc)
-            desc = re.sub(']] .* spellcasting modifier', ' + $mod]]', desc)
-            desc = re.sub(r'<br \/>\s?', '\n', desc)
-            desc = re.sub(r'<[\/uli]+?><[\/uli]+?>', os.linesep, desc)
+            for m, sub in SUB['effect'].items():
+                desc = m.sub(sub, desc)
         else:
             desc = desc.capitalize()
 
@@ -117,7 +113,10 @@ def print_spell_details(spell, data, bonus, mod, stats, outfile, header):
         else:
             return
 
-    write_preamble(outfile, spell, header)
+    if 'img' in details:
+        write_preamble(outfile, spell, header, details.pop('img'))
+    else:
+        write_preamble(outfile, spell, header)
 
     for title, content in details.items():
         fprint('{{' + title + '= ', header, file=outfile)

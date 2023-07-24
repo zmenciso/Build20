@@ -11,7 +11,7 @@ def write_throws(data, modifiers, outfile, header):
         bonus = data['proficiencies'][throw] + data['level']
         modifier = tools.decode_ability(data, ability)
         value = modifier + bonus + tools.decode_modifier(modifiers, throw)
-        fprint(f'| {throw.title()}, **{throw.title()}** [[d20 + {value}]]',
+        fprint(f'| {throw.title()}, {throw.title()} [[d20 + {value}]]',
                header, file=outfile)
 
     write_cap(outfile, end=header)
@@ -25,7 +25,7 @@ def write_skills(data, modifiers, outfile, header):
         if skill in SKILLS:
             value = tools.decode_skill(data, skill) + \
                     tools.decode_modifier(modifiers, skill)
-            fprint(f'| {skill.title()}, **{skill.title()}** [[d20 + {value}]]',
+            fprint(f'| {skill.title()}, {skill.title()} [[d20 + {value}]]',
                    header, file=outfile)
 
     write_cap(outfile, end=header)
