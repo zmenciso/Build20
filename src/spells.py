@@ -34,7 +34,8 @@ SUB = {
         },
     'effect': {
         re.compile('spell attack'): 'spell attack: [[d20 + $attack]]',
-        re.compile(']] .* spellcasting modifier'): ' + $mod]]',
+        re.compile('\\]\\] [your+\\s]+? spellcasting [ability]+? modifier'): ' + $mod]]',
+        re.compile('([your]+? spellcasting [ability]+? modifier)'): '\\1 (**$mod**)',
         re.compile(r'<br \/>\s?'): '\n',
         re.compile(r'<[\/uli]+?><[\/uli]+?>'): os.linesep
         }
