@@ -1,10 +1,6 @@
 from src.text import write_preamble, fprint, write_cap
-from src.const import RUNES
+from src.const import RUNES, DEADLY, FATAL
 
-
-# TODO: Add support for extra damage (sneak, deadly, etc.)
-# TODO: Deal with crits better
-# TODO: Add support for agile, finesse
 
 STRIKING = {
     '': 1,
@@ -17,13 +13,6 @@ DAMAGE = {
     'S': 'slashing',
     'P': 'piercing',
     'B': 'bludgeoning'
-    }
-
-SNEAK = {
-    0: '[[1d6]] precision',
-    1: '[[2d6]] precision',
-    2: '[[3d6]] precision',
-    3: '[[4d6]] precision'
     }
 
 
@@ -45,8 +34,22 @@ def write_strike(data, modifiers, outfile, header):
         fprint('{{Damage = ' + damage, header, file=outfile)
 
         if 'Sneak Attack' in data['specials']:
-            sneak_damage = SNEAK[(data['level'] + 1) // 6]
+            sneak_damage = ((data['level'] + 1) // 6) + 1
+            sneak_damage = f'[[{sneak_damage}d6]] precision'
             fprint('?{Sneak? | Yes, \n' + sneak_damage + '| No, \nNo sneak attack}',
+                   header, file=outfile)
+
+        write_cap(outfile, cap='}}', end='')
+
+        if item['name'] in DEADLY:
+            deadly_damage = f'{STRIKING[item["str"]]}{DEADLY[item["name"]]}'
+            fprint('{{Deadly = ', header, file=outfile)
+            fprint(f'[[{deadly_damage}]] additional crit damage',
+                   header, file=outfile)
+        elif item['name'] in FATAL:
+            fatal_damage = f'{STRIKING[item["str"]]}{FATAL[item["name"]]} * 2'
+            fprint('{{Fatal = ', header, file=outfile)
+            fprint(f'[[({fatal_damage}) + {FATAL[item["name"]]}]] damage on crit',
                    header, file=outfile)
 
         if len(item['runes']) > 0:
