@@ -47,10 +47,9 @@ def write_strike(data, modifiers, outfile, header):
             fprint(f'[[{deadly_damage}]] additional crit damage',
                    header, file=outfile)
         elif item['name'] in FATAL:
-            fatal_damage = f'{STRIKING[item["str"]] + 1}{FATAL[item["name"]]}'
-            fatal_damage = fatal_damage + f' + {item["damageBonus"]}'
+            fatal_damage = f'{STRIKING[item["str"]]}{FATAL[item["name"]]} * 2'
             fprint('{{Fatal = ', header, file=outfile)
-            fprint(f'[[{fatal_damage}]] damage on crit',
+            fprint(f'[[({fatal_damage}) + {FATAL[item["name"]]}]] damage on crit',
                    header, file=outfile)
 
         if len(item['runes']) > 0:
