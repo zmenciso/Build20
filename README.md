@@ -2,6 +2,9 @@
 
 Convert Pathbuilder 2e JSON output to Roll20 macros!
 
+![](./img/example_strike.png)
+![](./img/example_spell.png)
+
 
 ##  Requirements
 
