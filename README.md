@@ -109,7 +109,7 @@ Custom macros support much more diverse substitutions.
   - Skills : `$skl_TAG` Replace TAG with your proficiency of choice (e.g.
     `athletics`, `castingPrimal`, `martial`, `unarmored`)
   - Modifier: `$mod_TAG` Replace TAG with your modifier of choice
-  - Weapons: `$mod_ID_TAG` Replace ID with your weapon ID (0-indexed, so the
+  - Weapons: `$wep_ID_TAG` Replace ID with your weapon ID (0-indexed, so the
     first weapon on your sheet has ID 0), and replace TAG with your property of
     choice (e.g. `attack`, `damageBonus`, `die`)
 
