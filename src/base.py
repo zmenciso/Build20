@@ -28,6 +28,11 @@ def write_skills(data, modifiers, outfile, header):
             fprint(f'| {skill.title()}, {skill.title()} [[d20 + {value}]]',
                    header, file=outfile)
 
+    for lore in data['lores']:
+        value = lore[1] + tools.decode_ability(data, 'int') + data['level']
+        fprint(f'| Lore: {lore[0].title()}, Lore: {lore[0].title()} [[d20 + {value}]]',
+               header, file=outfile)
+
     write_cap(outfile, end=header)
 
 

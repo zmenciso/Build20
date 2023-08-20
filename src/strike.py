@@ -64,7 +64,7 @@ def write_strike(data, modifiers, outfile, header):
                 fprint('{{' + f'{rune} = ' + desc, header, file=outfile)
                 write_cap(outfile, cap='}}', end='')
 
-            write_cap(outfile, cap='')
+            write_cap(outfile, cap='', end=header)
 
         else:
-            write_cap(outfile, cap='}}')
+            write_cap(outfile, cap='}}', end=header)
