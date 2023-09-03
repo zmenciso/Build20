@@ -97,6 +97,7 @@ if __name__ == '__main__':
         modifiers = None
 
     write_skills(data, modifiers, OUTFILE, HEADER)
+    write_skills(data, modifiers, OUTFILE, HEADER, init=True)
     write_throws(data, modifiers, OUTFILE, HEADER)
     write_strike(data, modifiers, OUTFILE, HEADER)
     write_healing(OUTFILE, HEADER)
