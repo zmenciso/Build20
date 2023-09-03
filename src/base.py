@@ -17,16 +17,25 @@ def write_throws(data, modifiers, outfile, header):
     write_cap(outfile, end=header)
 
 
-def write_skills(data, modifiers, outfile, header):
-    write_preamble(outfile, 'Skill Check', header)
+def write_skills(data, modifiers, outfile, header, init=False):
+    if not init:
+        write_preamble(outfile, 'Skill Check', header)
+    else:
+        write_preamble(outfile, 'Initiative', header)
+
     fprint('{{Outcome = ?{Skill', header, file=outfile)
 
     for skill in data['proficiencies']:
         if skill in SKILLS:
             value = tools.decode_skill(data, skill) + \
                     tools.decode_modifier(modifiers, skill)
-            fprint(f'| {skill.title()}, {skill.title()} [[d20 + {value}]]',
-                   header, file=outfile)
+
+            if not init:
+                fprint(f'| {skill.title()}, {skill.title()} [[d20 + {value}]]',
+                       header, file=outfile)
+            else:
+                fprint(f'| {skill.title()}, {skill.title()} [[d20 + {value} &#38;&#123;tracker:+&#125;]],',
+                       header, file=outfile)
 
     for lore in data['lores']:
         value = lore[1] + tools.decode_ability(data, 'int') + data['level']
