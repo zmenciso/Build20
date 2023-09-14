@@ -22,25 +22,33 @@ Invoke the script like so:
 ./build20.py [options] [INPUT]
     -o  --output    FILE    Write output to FILE
     -m  --modfile   FILE    Use the modifications in FILE
-    -s  --spells    FILE    Also write macros for spells in FILE
+    -s  --spells    FILE    Use user-provided spell descriptions in FILE
     -c  --custom    FILE    Write custom macros contained in FILE
-    -n  --noheader          Do not print headers (useful for Roll20 API)
+    -n  --noheader          Do not print headers (useful for Roll20 API import)
     -h  --help              Print this message
 ```
 
 The `INPUT` should be a Pathbuilder 2e formatted JSON file ("Menu" > "Export" >
 "Export JSON").  You can also paste the JSON in by not specifying an input file.
 
-Copy the macro after each header into a new Roll20 macro.
+Build20 will attempt to create macros for:
+  - Skills
+  - Saving throws
+  - Initiative (results sent to turn tracker)
+  - Common healing items
+  - Strikes with all weapons 
+  - Spells
+  - Focus spells
+
+Build20 can also generate custom macros, see the *Custom Macros* section.
 
 ### Spells
 
-Build20 will also attempt to generate spell macros.  You can improve the spell
-descriptions by writing them yourself in a YAML file and specifying the file
-with the `-s` or `--spells` switch.  Spells consist of arbitrary key/value pairs
-(nesting not supported), and the name of the spell must exactly match.  Build20
-will not automatically generate spells for spells you describe in the YAML file.
-The following is an example spell:
+By default, Build20 pulls information from AoN to create spell macros.  You can
+improve the spell descriptions by writing them yourself in a YAML file and
+specifying the file with the `-s` or `--spells` switch.  Spells consist of
+arbitrary key/value pairs (nesting not supported), and the name of the spell
+must exactly match.  The following is an example YAML spell:
 
 ```yaml
 Ignite Fireworks:
@@ -69,27 +77,6 @@ The spells YAML format currently supports three substitutions:
     proficiency bonus)
   - `$dc` will be replaced by your caster DC
   - `$mod` will be replaced by your spellcasting modifier
-
-### Modifications File
-
-Any field (skill check, saving throw, etc.) can be **modified** with an integer
-value by using the `-m` or `--modfile` switch and supplying a **modifications
-file**.  Each modification is of the form `FIELD MODIFICATION`, where `FIELD` is
-the name of the field and `MODIFICATION` is an integer value.  This file must be
-line-delimited, and lines starting with `#` are treated as comments.  Make sure
-the `FIELD` exactly matches the Pathbuilder JSON output.  For example, this file
-might look like:
-
-```
-# Clumsy -1
-acrobatics -1
-stealth -1
-thievery -1
-reflex -1
-```
-
-To modify spells, use the caster type (e.g. "castingDivine").  To modify attack rolls,
-use the name of the weapon (e.g. "Large +1 Greatsword").
 
 ### Custom Macros
 
@@ -128,6 +115,36 @@ Foo:
 # Modifiers file
 potato 10
 ```
+
+### Turn Tracker
+
+To have results of the "Initiative" macro properly sent to the turn tracker,
+create a *character ability* called `tracker` with the following content:
+
+```
+&#38;&#123;tracker:+&#125;
+```
+
+### Modifications File
+
+Any field (skill check, saving throw, etc.) can be **modified** with an integer
+value by using the `-m` or `--modfile` switch and supplying a **modifications
+file**.  Each modification is of the form `FIELD MODIFICATION`, where `FIELD` is
+the name of the field and `MODIFICATION` is an integer value.  This file must be
+line-delimited, and lines starting with `#` are treated as comments.  Make sure
+the `FIELD` exactly matches the Pathbuilder JSON output.  For example, this file
+might look like:
+
+```
+# Clumsy -1
+acrobatics -1
+stealth -1
+thievery -1
+reflex -1
+```
+
+To modify spells, use the caster type (e.g. "castingDivine").  To modify attack rolls,
+use the name of the weapon (e.g. "Large +1 Greatsword").
 
 ##  `heal.py`
 
