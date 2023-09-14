@@ -20,9 +20,9 @@ def usage(exitcode):
     print(f'''{sys.argv[0]} [options] [INPUT]
     -o  --output    FILE    Write output to FILE
     -m  --modfile   FILE    Use the modifications in FILE
-    -s  --spells    FILE    Also write macros for spells in FILE
+    -s  --spells    FILE    Use user-provided spell descriptions in FILE
     -c  --custom    FILE    Write custom macros contained in FILE
-    -n  --noheader          Do not print headers (useful for Roll20 API)
+    -n  --noheader          Do not print headers (useful for Roll20 API import)
     -h  --help              Print this message''')
 
     sys.exit(exitcode)
