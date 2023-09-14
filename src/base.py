@@ -2,6 +2,8 @@ from src.text import write_cap, write_preamble, fprint
 from src.const import SKILLS, SAVES
 from src import tools
 
+TRACKER = '%{|tracker}]]'
+
 
 def write_throws(data, modifiers, outfile, header):
     write_preamble(outfile, 'Saving Throws', header)
@@ -34,13 +36,18 @@ def write_skills(data, modifiers, outfile, header, init=False):
                 fprint(f'| {skill.title()}, {skill.title()} [[d20 + {value}]]',
                        header, file=outfile)
             else:
-                fprint(f'| {skill.title()}, {skill.title()} [[d20 + {value} &#38;&#123;tracker:+&#125;]],',
+                fprint(f'| {skill.title()}, {skill.title()} [[d20 + {value} ' + TRACKER,
                        header, file=outfile)
 
     for lore in data['lores']:
         value = lore[1] + tools.decode_ability(data, 'int') + data['level']
-        fprint(f'| Lore: {lore[0].title()}, Lore: {lore[0].title()} [[d20 + {value}]]',
-               header, file=outfile)
+
+        if not init:
+            fprint(f'| Lore: {lore[0].title()}, Lore: {lore[0].title()} [[d20 + {value}]]',
+                   header, file=outfile)
+        else:
+            fprint(f'| Lore: {lore[0].title()}, Lore: {lore[0].title()} [[d20 + {value} ' + TRACKER,
+                   header, file=outfile)
 
     write_cap(outfile, end=header)
 
