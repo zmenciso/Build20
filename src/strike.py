@@ -48,7 +48,7 @@ def write_strike(data, modifiers, outfile, header):
                    header, file=outfile)
         elif item['name'] in FATAL:
             write_cap(outfile, cap='}}', end='')
-            fatal_damage = f'{STRIKING[item["str"]]}{FATAL[item["name"]]} * 2'
+            fatal_damage = f'({STRIKING[item["str"]]}{FATAL[item["name"]]} + {item["damageBonus"]}[BONUS]) * 2'
             fprint('{{Fatal = ', header, file=outfile)
             fprint(f'[[({fatal_damage}) + {FATAL[item["name"]]}]] damage on crit',
                    header, file=outfile)
